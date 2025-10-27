@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - DSA Tracker</title>
+    <link rel="stylesheet" href="./css/reset.css">
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+    <header></header>
+    
+    <main class="dashboard">
+        <!-- Loading Indicator -->
+        <div id="loading-indicator" class="loading-indicator">
+            <div class="spinner-large"></div>
+            <p>Loading your progress...</p>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div id="dashboard-data" style="opacity: 0; transition: opacity 0.3s;">
+            <!-- Welcome Section -->
+            <section class="welcome-section">
+                <div class="welcome-content">
+                    <h1>Welcome back, <span id="user-display-name">User</span>! 👋</h1>
+                    <p>Track your progress across Love Babbar's DSA 450</p>
+                </div>
+                <div class="quick-actions">
+                    <a href="topics.html" class="quick-action-btn">📚 Browse Topics</a>
+                    <a href="questions.html" class="quick-action-btn">📝 All Questions</a>
+                </div>
+            </section>
+            
+            <!-- Statistics Section -->
+            <section class="stats-section">
+                <div class="stat-card primary-stat">
+                    <div class="stat-icon">✅</div>
+                    <h3>Problems Solved</h3>
+                    <p id="total-solved" class="stat-number">0</p>
+                    <small class="stat-label">out of <span id="total-questions">447</span></small>
+                </div>
+                <div class="stat-card primary-stat">
+                    <div class="stat-icon">📈</div>
+                    <h3>Completion</h3>
+                    <p id="progress-percentage" class="stat-number">0%</p>
+                    <small class="stat-label">overall progress</small>
+                </div>
+                <div class="stat-card easy-card">
+                    <div class="stat-icon">💚</div>
+                    <h3>Easy</h3>
+                    <p id="easy-solved" class="stat-number">0</p>
+                    <small class="stat-label">of <span id="easy-total">0</span> solved</small>
+                </div>
+                <div class="stat-card medium-card">
+                    <div class="stat-icon">💛</div>
+                    <h3>Medium</h3>
+                    <p id="medium-solved" class="stat-number">0</p>
+                    <small class="stat-label">of <span id="medium-total">0</span> solved</small>
+                </div>
+                <div class="stat-card hard-card">
+                    <div class="stat-icon">❤️</div>
+                    <h3>Hard</h3>
+                    <p id="hard-solved" class="stat-number">0</p>
+                    <small class="stat-label">of <span id="hard-total">0</span> solved</small>
+                </div>
+            </section>
+
+            <!-- Progress by Topic -->
+            <section class="topic-progress-section">
+                <h2>Progress by Topic</h2>
+                <div id="topic-progress" class="topic-progress-grid"></div>
+            </section>
+
+            <!-- Recent Activity -->
+            <section class="recent-activity">
+                <h2>Keep Going!</h2>
+                <div class="activity-cards">
+                    <div class="activity-card">
+                        <h3>🎯 Next Milestone</h3>
+                        <p id="next-milestone">Solve your first problem!</p>
+                    </div>
+                    <div class="activity-card">
+                        <h3>💪 Motivation</h3>
+                        <p id="motivation-text">Every problem solved is a step closer to your goal!</p>
+                    </div>
+                    <div class="activity-card">
+                        <h3>🔥 Streak</h3>
+                        <p id="streak-text">Keep solving daily!</p>
+                    </div>
+                </div>
+                <div class="cta-section-dashboard">
+                    <a href="topics.html" class="btn-large">Start Solving →</a>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 DSA Tracker. Built for interview preparation.</p>
+    </footer>
+    
+    <script type="module" src="./js/header.js"></script>
+    
+    <script type="module">
+        import { auth, db } from './js/firebase-config.js';
+        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // TOPIC METADATA - Love Babbar 450
+        const TOPICS_META = {
+            "Array": { count: 36, easy: 12, medium: 18, hard: 6 },
+            "Matrix": { count: 10, easy: 2, medium: 5, hard: 3 },
+            "String": { count: 43, easy: 8, medium: 25, hard: 10 },
+            "Searching & Sorting": { count: 36, easy: 6, medium: 20, hard: 10 },
+            "LinkedList": { count: 36, easy: 10, medium: 20, hard: 6 },
+            "Binary Trees": { count: 35, easy: 8, medium: 22, hard: 5 },
+            "Binary Search Trees": { count: 22, easy: 4, medium: 12, hard: 6 },
+            "Greedy": { count: 35, easy: 8, medium: 20, hard: 7 },
+            "BackTracking": { count: 19, easy: 0, medium: 8, hard: 11 },
+            "Stacks and Queues": { count: 38, easy: 10, medium: 20, hard: 8 },
+            "Heap": { count: 18, easy: 4, medium: 10, hard: 4 },
+            "Graph": { count: 44, easy: 4, medium: 25, hard: 15 },
+            "Trie": { count: 6, easy: 0, medium: 5, hard: 1 },
+            "Dynamic Programming": { count: 60, easy: 6, medium: 40, hard: 14 },
+            "Bit Manipulation": { count: 10, easy: 5, medium: 4, hard: 1 }
+        };
+
+        // Question ID ranges for each topic
+        const TOPIC_ID_RANGES = {
+            "Array": [1, 36],
+            "Matrix": [37, 46],
+            "String": [47, 90],
+            "Searching & Sorting": [91, 126],
+            "LinkedList": [127, 162],
+            "Binary Trees": [163, 197],
+            "Binary Search Trees": [198, 219],
+            "Greedy": [220, 254],
+            "BackTracking": [255, 273],
+            "Stacks and Queues": [274, 311],
+            "Heap": [312, 329],
+            "Graph": [330, 372],
+            "Trie": [373, 378],
+            "Dynamic Programming": [379, 437],
+            "Bit Manipulation": [438, 447]
+        };
+
+        let solvedQuestions = new Set();
+        let currentUser = null;
+
+        // Calculate totals
+        let totalQuestions = 0;
+        let totalEasy = 0;
+        let totalMedium = 0;
+        let totalHard = 0;
+
+        Object.values(TOPICS_META).forEach(topic => {
+            totalQuestions += topic.count;
+            totalEasy += topic.easy;
+            totalMedium += topic.medium;
+            totalHard += topic.hard;
+        });
+
+        console.log('Total questions:', totalQuestions);
+
+        // Auth check
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                const displayName = user.displayName || user.email.split('@')[0];
+                document.getElementById('user-display-name').textContent = displayName;
+                
+                await loadProgress(user.uid);
+                updateStats();
+                hideLoading();
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        async function loadProgress(uid) {
+            try {
+                const docRef = doc(db, 'userProgress', uid);
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    solvedQuestions = new Set(docSnap.data().solved || []);
+                    console.log('Progress loaded from Firebase:', solvedQuestions.size);
+                }
+            } catch (error) {
+                console.error('Error loading progress:', error);
+                const saved = localStorage.getItem('solvedQuestions');
+                if (saved) {
+                    solvedQuestions = new Set(JSON.parse(saved));
+                }
+            }
+        }
+
+        function hideLoading() {
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const dashboardData = document.getElementById('dashboard-data');
+            
+            setTimeout(() => {
+                loadingIndicator.style.display = 'none';
+                dashboardData.style.opacity = '1';
+            }, 500);
+        }
+
+        function updateStats() {
+            const totalSolved = solvedQuestions.size;
+            const percentage = totalQuestions > 0 ? Math.round((totalSolved / totalQuestions) * 100) : 0;
+            
+            // Calculate difficulty-wise solved
+            let easySolved = 0;
+            let mediumSolved = 0;
+            let hardSolved = 0;
+
+            Object.entries(TOPICS_META).forEach(([topic, meta]) => {
+                const [startId, endId] = TOPIC_ID_RANGES[topic];
+                const topicSolved = Array.from(solvedQuestions).filter(
+                    id => id >= startId && id <= endId
+                );
+                
+                // Approximate distribution (you can improve this with actual question data)
+                const topicPercentage = topicSolved.length / meta.count;
+                easySolved += Math.round(meta.easy * topicPercentage);
+                mediumSolved += Math.round(meta.medium * topicPercentage);
+                hardSolved += Math.round(meta.hard * topicPercentage);
+            });
+            
+            // Update UI
+            document.getElementById('total-solved').textContent = totalSolved;
+            document.getElementById('total-questions').textContent = totalQuestions;
+            document.getElementById('progress-percentage').textContent = percentage + '%';
+            
+            document.getElementById('easy-solved').textContent = easySolved;
+            document.getElementById('easy-total').textContent = totalEasy;
+            document.getElementById('medium-solved').textContent = mediumSolved;
+            document.getElementById('medium-total').textContent = totalMedium;
+            document.getElementById('hard-solved').textContent = hardSolved;
+            document.getElementById('hard-total').textContent = totalHard;
+            
+            updateTopicProgress();
+            updateMotivation(totalSolved, percentage);
+        }
+
+        function updateTopicProgress() {
+            const container = document.getElementById('topic-progress');
+            container.innerHTML = '';
+            
+            Object.entries(TOPICS_META).forEach(([topic, meta]) => {
+                const [startId, endId] = TOPIC_ID_RANGES[topic];
+                const topicSolved = Array.from(solvedQuestions).filter(
+                    id => id >= startId && id <= endId
+                ).length;
+                
+                const topicPercentage = meta.count > 0 ? Math.round((topicSolved / meta.count) * 100) : 0;
+                
+                const card = document.createElement('div');
+                card.className = 'topic-progress-card';
+                card.onclick = () => window.location.href = `topic.html?name=${encodeURIComponent(topic)}`;
+                card.style.cursor = 'pointer';
+                
+                // Status color
+                let statusColor = '#e5e7eb';
+                if (topicPercentage === 100) {
+                    statusColor = '#10b981';
+                } else if (topicPercentage > 0) {
+                    statusColor = '#06b6d4';
+                }
+                
+                card.innerHTML = `
+                    <div class="topic-card-header">
+                        <h4>${topic}</h4>
+                        <span class="topic-percentage" style="color: ${statusColor}">${topicPercentage}%</span>
+                    </div>
+                    <div class="progress-info">
+                        <span class="progress-count">${topicSolved}/${meta.count}</span>
+                        <span class="difficulty-breakdown">
+                            E: ${meta.easy} | M: ${meta.medium} | H: ${meta.hard}
+                        </span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: ${topicPercentage}%; background: ${statusColor}"></div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function updateMotivation(solved, percentage) {
+            const milestoneEl = document.getElementById('next-milestone');
+            const motivationEl = document.getElementById('motivation-text');
+            const streakEl = document.getElementById('streak-text');
+            
+            // Milestones
+            if (solved === 0) {
+                milestoneEl.textContent = 'Solve your first problem to get started!';
+                motivationEl.textContent = 'Every expert was once a beginner. Start today!';
+            } else if (solved < 50) {
+                milestoneEl.textContent = `${50 - solved} more to reach 50 problems!`;
+                motivationEl.textContent = 'Great start! Keep the momentum going! 🚀';
+            } else if (solved < 100) {
+                milestoneEl.textContent = `${100 - solved} more to reach 100 problems!`;
+                motivationEl.textContent = 'You\'re making excellent progress! 💪';
+            } else if (solved < 200) {
+                milestoneEl.textContent = `${200 - solved} more to reach 200 problems!`;
+                motivationEl.textContent = 'Outstanding work! Keep pushing! 🔥';
+            } else if (solved < 447) {
+                milestoneEl.textContent = `${447 - solved} more to complete all 447!`;
+                motivationEl.textContent = 'Amazing! You\'re crushing it! 🏆';
+            } else {
+                milestoneEl.textContent = 'All 447 problems completed! 🎉';
+                motivationEl.textContent = 'Congratulations! You\'re interview ready! 🌟';
+            }
+
+            // Streak message
+            if (solved < 10) {
+                streakEl.textContent = 'Build your solving habit daily!';
+            } else if (solved < 50) {
+                streakEl.textContent = `You've solved ${solved} problems! Keep going!`;
+            } else if (solved < 100) {
+                streakEl.textContent = `${solved} problems down! You're unstoppable!`;
+            } else {
+                streakEl.textContent = `${solved} problems! You're a DSA champion! 🏅`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,14 +1,187 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="Track your DSA problem-solving progress - Master Data Structures and Algorithms">
+    <title>DSA Progress Tracker - Master Coding Interviews</title>
+    <link rel="stylesheet" href="./css/reset.css">
+    <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+    <!-- Loading Overlay (shown while checking auth) -->
+    <div id="auth-loading" class="auth-loading-overlay">
+        <div class="loading-content">
+            <div class="large-spinner"></div>
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <!-- Landing Page Content (shown if NOT logged in) -->
+    <div id="landing-page" style="display: none;">
+        <!-- Header -->
+        <header>
+            <nav>
+                <a href="index.html" class="nav-brand-link">
+                    <h1>DSA Tracker</h1>
+                </a>
+                <div id="nav-links">
+                    <a href="login.html" class="btn-secondary">Login</a>
+                    <a href="signup.html" class="btn-primary">Get Started</a>
+                </div>
+            </nav>
+        </header>
+        
+        <!-- Hero Section -->
+        <main>
+            <section class="hero">
+                <div class="hero-badge">🚀 Your Path to Coding Mastery</div>
+                <h2>Master Data Structures & Algorithms</h2>
+                <p>Track your progress through 450+ curated DSA problems and ace your coding interviews</p>
+                <div class="hero-buttons">
+                    <a href="signup.html" class="btn-large">Start Tracking Free</a>
+                    <a href="#features" class="btn-outline">Learn More</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <strong>450+</strong>
+                        <span>Curated Problems</span>
+                    </div>
+                    <div class="stat-item">
+                        <strong>15+</strong>
+                        <span>DSA Topics</span>
+                    </div>
+                    <div class="stat-item">
+                        <strong>100%</strong>
+                        <span>Free Forever</span>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- What is DSA Tracker Section -->
+            <section class="about-section">
+                <div class="about-content">
+                    <h2>What is DSA Tracker?</h2>
+                    <p class="lead-text">
+                        DSA Tracker is a <strong>free, cloud-based progress tracking tool</strong> designed to help you systematically prepare for coding interviews. Track which problems you've solved, monitor your progress across different topics, and stay motivated with daily practice streaks.
+                    </p>
+                    <div class="about-features">
+                        <div class="about-feature">
+                            <span class="feature-number">01</span>
+                            <h4>Organize Your Learning</h4>
+                            <p>Problems categorized by topics: Arrays, Strings, Trees, Graphs, Dynamic Programming, and more.</p>
+                        </div>
+                        <div class="about-feature">
+                            <span class="feature-number">02</span>
+                            <h4>Track Your Progress</h4>
+                            <p>Mark problems as complete, see your completion percentage, and visualize your improvement over time.</p>
+                        </div>
+                        <div class="about-feature">
+                            <span class="feature-number">03</span>
+                            <h4>Direct LeetCode Links</h4>
+                            <p>Click any problem to jump directly to LeetCode and start solving immediately.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Features Section -->
+            <section class="features" id="features">
+                <h2 class="section-title">Everything You Need to Succeed</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📚</div>
+                        <h3>Topic-wise Organization</h3>
+                        <p>Problems organized by Arrays, Strings, Linked Lists, Trees, Graphs, Dynamic Programming, and 10+ more topics</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Visual Progress Tracking</h3>
+                        <p>See your completion stats, track solved vs. total problems, and monitor your overall progress percentage</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔗</div>
+                        <h3>LeetCode Integration</h3>
+                        <p>Direct links to practice problems on LeetCode - click and start solving in seconds</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔥</div>
+                        <h3>Daily Streaks</h3>
+                        <p>Build consistent practice habits with daily streak tracking and stay motivated</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">☁️</div>
+                        <h3>Cloud Sync</h3>
+                        <p>Your progress syncs automatically across all devices - practice anywhere, anytime</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3>Interview Ready</h3>
+                        <p>Curated problem sets covering patterns asked by FAANG and top tech companies</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- CTA Section -->
+            <section class="cta-section">
+                <div class="cta-content">
+                    <h2>Ready to Start Your DSA Journey?</h2>
+                    <p>Join thousands of developers preparing for coding interviews</p>
+                    <div class="cta-buttons">
+                        <a href="signup.html" class="btn-large">Create Free Account</a>
+                        <a href="login.html" class="btn-outline-white">Already have an account? Sign In</a>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Footer -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>DSA Tracker</h3>
+                    <p>Your companion for mastering Data Structures & Algorithms</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Product</h4>
+                        <a href="#features">Features</a>
+                        <a href="dashboard.html">Dashboard</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Account</h4>
+                        <a href="signup.html">Sign Up</a>
+                        <a href="login.html">Login</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 DSA Tracker. Built for interview preparation.</p>
+            </div>
+        </footer>
+    </div>
+    <script type="module" src="./js/header.js"></script>
+    
+    <!-- Auth Check Script -->
+    <script type="module">
+        import { auth } from './js/firebase-config.js';
+        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        
+        const authLoading = document.getElementById('auth-loading');
+        const landingPage = document.getElementById('landing-page');
+        
+        // Check authentication state
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is logged in - redirect to dashboard
+                window.location.href = 'dashboard.html';
+            } else {
+                // User is NOT logged in - show landing page
+                authLoading.style.display = 'none';
+                landingPage.style.display = 'block';
+            }
+        });
+    </script>
 </body>
 </html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Topics - DSA Tracker</title>
+    <link rel="stylesheet" href="./css/reset.css">
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+    <header></header>
+
+    <main class="topics-page">
+        <div class="topics-header">
+            <h1>DSA Topics - Love Babbar 450</h1>
+            <p>Choose a topic to start practicing • 447 Total Questions</p>
+        </div>
+
+        <div id="loading" class="loading-indicator">
+            <div class="spinner-large"></div>
+            <p>Loading topics...</p>
+        </div>
+
+        <div id="topics-grid" class="topics-grid" style="display: none;"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 DSA Tracker. Built for interview preparation.</p>
+    </footer>
+
+    <script type="module" src="./js/header.js"></script>
+
+    <script type="module">
+        import { auth, db } from './js/firebase-config.js';
+        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Complete Love Babbar 450 Topics with actual counts
+        const TOPICS_META = {
+            "Array": { 
+                count: 36, 
+                icon: "📊", 
+                color: "#8b5cf6",
+                description: "Arrays, sorting, searching"
+            },
+            "Matrix": { 
+                count: 10, 
+                icon: "🔢", 
+                color: "#ec4899",
+                description: "2D arrays and matrices"
+            },
+            "String": { 
+                count: 43, 
+                icon: "📝", 
+                color: "#06b6d4",
+                description: "String manipulation"
+            },
+            "Searching & Sorting": { 
+                count: 36, 
+                icon: "🔍", 
+                color: "#10b981",
+                description: "Search and sort algorithms"
+            },
+            "LinkedList": { 
+                count: 36, 
+                icon: "🔗", 
+                color: "#f59e0b",
+                description: "Linked list operations"
+            },
+            "Binary Trees": { 
+                count: 35, 
+                icon: "🌲", 
+                color: "#8b5cf6",
+                description: "Tree traversals and problems"
+            },
+            "Binary Search Trees": { 
+                count: 22, 
+                icon: "🌳", 
+                color: "#ec4899",
+                description: "BST operations"
+            },
+            "Greedy": { 
+                count: 35, 
+                icon: "💰", 
+                color: "#06b6d4",
+                description: "Greedy algorithms"
+            },
+            "BackTracking": { 
+                count: 19, 
+                icon: "🔙", 
+                color: "#10b981",
+                description: "Backtracking problems"
+            },
+            "Stacks and Queues": { 
+                count: 38, 
+                icon: "📚", 
+                color: "#f59e0b",
+                description: "Stack and queue operations"
+            },
+            "Heap": { 
+                count: 18, 
+                icon: "⛰️", 
+                color: "#8b5cf6",
+                description: "Heap data structure"
+            },
+            "Graph": { 
+                count: 44, 
+                icon: "🕸️", 
+                color: "#ec4899",
+                description: "Graph algorithms"
+            },
+            "Trie": { 
+                count: 6, 
+                icon: "🔤", 
+                color: "#06b6d4",
+                description: "Trie data structure"
+            },
+            "Dynamic Programming": { 
+                count: 60, 
+                icon: "⚡", 
+                color: "#10b981",
+                description: "DP problems"
+            },
+            "Bit Manipulation": { 
+                count: 10, 
+                icon: "🔢", 
+                color: "#f59e0b",
+                description: "Bitwise operations"
+            }
+        };
+
+        // Question IDs range for each topic (for progress tracking)
+        const TOPIC_ID_RANGES = {
+            "Array": [1, 36],
+            "Matrix": [37, 46],
+            "String": [47, 90],
+            "Searching & Sorting": [91, 126],
+            "LinkedList": [127, 162],
+            "Binary Trees": [163, 197],
+            "Binary Search Trees": [198, 219],
+            "Greedy": [220, 254],
+            "BackTracking": [255, 273],
+            "Stacks and Queues": [274, 311],
+            "Heap": [312, 329],
+            "Graph": [330, 372],
+            "Trie": [373, 378],
+            "Dynamic Programming": [379, 437],
+            "Bit Manipulation": [438, 447]
+        };
+
+        let solvedQuestions = new Set();
+        let currentUser = null;
+
+        async function init() {
+            console.log('Topics page initializing...');
+            
+            onAuthStateChanged(auth, async (user) => {
+                currentUser = user;
+                console.log('Auth state:', user ? 'logged in' : 'guest');
+                
+                await loadProgress();
+                renderTopics();
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('topics-grid').style.display = 'grid';
+            });
+        }
+
+        async function loadProgress() {
+            try {
+                if (currentUser) {
+                    const docRef = doc(db, 'userProgress', currentUser.uid);
+                    const docSnap = await getDoc(docRef);
+                    
+                    if (docSnap.exists()) {
+                        solvedQuestions = new Set(docSnap.data().solved || []);
+                        console.log('Loaded from Firebase:', solvedQuestions.size);
+                    }
+                }
+                
+                const saved = localStorage.getItem('solvedQuestions');
+                if (saved && solvedQuestions.size === 0) {
+                    solvedQuestions = new Set(JSON.parse(saved));
+                    console.log('Loaded from localStorage:', solvedQuestions.size);
+                }
+            } catch (error) {
+                console.error('Error loading progress:', error);
+            }
+        }
+
+        function renderTopics() {
+            console.log('Rendering topics...');
+            const grid = document.getElementById('topics-grid');
+            grid.innerHTML = '';
+
+            Object.entries(TOPICS_META).forEach(([topic, meta]) => {
+                const totalCount = meta.count;
+                
+                // Calculate solved count based on ID range
+                const [startId, endId] = TOPIC_ID_RANGES[topic];
+                const solvedCount = Array.from(solvedQuestions).filter(
+                    id => id >= startId && id <= endId
+                ).length;
+                
+                const percentage = totalCount > 0 ? Math.round((solvedCount / totalCount) * 100) : 0;
+                
+                let status = 'not started';
+                let statusColor = '#fef3c7';
+                let statusTextColor = '#92400e';
+                
+                if (percentage === 100) {
+                    status = 'completed';
+                    statusColor = '#d1fae5';
+                    statusTextColor = '#065f46';
+                } else if (percentage > 0) {
+                    status = 'in progress';
+                    statusColor = '#dbeafe';
+                    statusTextColor = '#1e40af';
+                }
+                
+                const card = document.createElement('div');
+                card.className = 'topic-card-item';
+                card.onclick = () => {
+                    console.log('Navigating to:', topic);
+                    window.location.href = `topic.html?name=${encodeURIComponent(topic)}`;
+                };
+                
+                card.innerHTML = `
+                    <div class="topic-icon" style="background: ${meta.color}">
+                        <span>${meta.icon}</span>
+                    </div>
+                    <h3 class="topic-name">${topic}</h3>
+                    <p class="topic-description">${meta.description}</p>
+                    <p class="topic-count">${totalCount} Questions</p>
+                    
+                    <div class="topic-progress-section">
+                        <div class="progress-label">
+                            <span>Progress</span>
+                            <span class="progress-percentage">${percentage}%</span>
+                        </div>
+                        <div class="progress-bar-wrapper">
+                            <div class="progress-bar-inner" style="width: ${percentage}%; background: ${percentage === 100 ? '#10b981' : percentage > 0 ? 'linear-gradient(90deg, #4f46e5, #06b6d4)' : '#e5e7eb'}"></div>
+                        </div>
+                        <div class="progress-stats">
+                            <span class="solved-count">${solvedCount}/${totalCount}</span>
+                            <span class="status-badge" style="background: ${statusColor}; color: ${statusTextColor}">${status}</span>
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+            
+            console.log('Topics rendered:', Object.keys(TOPICS_META).length);
+        }
+
+        init();
+    </script>
+</body>
+</html>

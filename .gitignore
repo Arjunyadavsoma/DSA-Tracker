@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.local
+
+# Firebase config (if using separate file)
+firebase-config-private.js
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
