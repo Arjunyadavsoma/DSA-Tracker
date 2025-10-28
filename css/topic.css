@@ -309,8 +309,13 @@
 
 .filter-group {
     display: flex;
+    flex-direction: column;
     gap: 1rem;
-    align-items: center;
+}
+.filter-group label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
 }
 
 .filter-label {
