@@ -685,3 +685,45 @@
         display: none;
     }
 }
+/* ==================== Mark as Done Button ==================== */
+.mark-done-btn {
+    padding: 0.75rem 1.5rem;
+    background: var(--card-bg);
+    color: var(--brand-color);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1rem;
+    border: 2px solid var(--brand-color);
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.mark-done-btn:hover {
+    background: var(--brand-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+/* Done State */
+.mark-done-btn.done {
+    background: linear-gradient(135deg, var(--solved-color), #059669);
+    color: white;
+    border-color: var(--solved-color);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.mark-done-btn.done:hover {
+    background: linear-gradient(135deg, #059669, var(--solved-color));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+/* Remove old checkbox styles */
+.checkbox-container,
+.solved-check {
+    display: none; /* Remove if checkbox styles exist */
+}

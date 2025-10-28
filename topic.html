@@ -760,65 +760,77 @@
         }
 
         function renderQuestions(questions) {
-            const container = document.getElementById('questions-grid');
-            container.innerHTML = '';
+    const container = document.getElementById('questions-grid');
+    container.innerHTML = '';
 
-            console.log(`🎨 Rendering ${questions.length} questions`);
+    console.log(`🎨 Rendering ${questions.length} questions`);
 
-            if (questions.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-questions">
-                        <div class="empty-icon">📝</div>
-                        <h3>No Questions Found</h3>
-                        <p>Try adjusting your filters.</p>
-                    </div>
-                `;
-                return;
+    if (questions.length === 0) {
+        container.innerHTML = `
+            <div class="empty-questions">
+                <div class="empty-icon">📝</div>
+                <h3>No Questions Found</h3>
+                <p>Try adjusting your filters.</p>
+            </div>
+        `;
+        return;
+    }
+
+    questions.forEach(q => {
+        const isSolved = solvedQuestions.has(q.id);
+        
+        const item = document.createElement('div');
+        item.className = `question-item ${isSolved ? 'solved' : ''}`;
+        
+        // ✅ NEW: Button instead of checkbox
+        item.innerHTML = `
+            <div class="q-number">#${q.id}</div>
+            <div class="q-details">
+                <h3 class="q-title">${q.name}</h3>
+                <div class="q-meta">
+                    <span class="difficulty-badge ${q.difficulty.toLowerCase()}">${q.difficulty}</span>
+                </div>
+            </div>
+            <div class="q-actions">
+                <button class="mark-done-btn ${isSolved ? 'done' : ''}" data-id="${q.id}">
+                    ${isSolved ? '✓ Done' : 'Mark as Done'}
+                </button>
+                <a href="${q.url}" target="_blank" class="solve-btn">Solve →</a>
+            </div>
+        `;
+
+        // ✅ Button click handler (same logic as checkbox)
+        const markDoneBtn = item.querySelector('.mark-done-btn');
+        markDoneBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const isDone = solvedQuestions.has(q.id);
+            
+            if (isDone) {
+                // Unmark as done
+                solvedQuestions.delete(q.id);
+                markDoneBtn.classList.remove('done');
+                markDoneBtn.textContent = 'Mark as Done';
+                console.log('❌ Unmarked:', q.id);
+            } else {
+                // Mark as done
+                solvedQuestions.add(q.id);
+                markDoneBtn.classList.add('done');
+                markDoneBtn.textContent = '✓ Done';
+                console.log('✅ Marked as solved:', q.id);
             }
+            
+            await saveProgress();
+            updateTopicHeader();
+            updateProgress();
+            item.classList.toggle('solved', solvedQuestions.has(q.id));
+        });
 
-            questions.forEach(q => {
-                const isSolved = solvedQuestions.has(q.id);
-                
-                const item = document.createElement('div');
-                item.className = `question-item ${isSolved ? 'solved' : ''}`;
-                
-                item.innerHTML = `
-                    <div class="q-number">#${q.id}</div>
-                    <div class="q-details">
-                        <h3 class="q-title">${q.name}</h3>
-                        <div class="q-meta">
-                            <span class="difficulty-badge ${q.difficulty.toLowerCase()}">${q.difficulty}</span>
-                        </div>
-                    </div>
-                    <div class="q-actions">
-                        <div class="checkbox-container">
-                            <input type="checkbox" class="solved-check" 
-                                   data-id="${q.id}" ${isSolved ? 'checked' : ''}>
-                        </div>
-                        <a href="${q.url}" target="_blank" class="solve-btn">Solve →</a>
-                    </div>
-                `;
+        container.appendChild(item);
+    });
 
-                const checkbox = item.querySelector('.solved-check');
-                checkbox.addEventListener('change', async (e) => {
-                    if (e.target.checked) {
-                        solvedQuestions.add(q.id);
-                        console.log('✅ Marked as solved:', q.id);
-                    } else {
-                        solvedQuestions.delete(q.id);
-                        console.log('❌ Unmarked:', q.id);
-                    }
-                    await saveProgress();
-                    updateTopicHeader();
-                    updateProgress();
-                    item.classList.toggle('solved', e.target.checked);
-                });
+    console.log('✅ Questions rendered successfully');
+}
 
-                container.appendChild(item);
-            });
-
-            console.log('✅ Questions rendered successfully');
-        }
 
         function setupFilters() {
             document.querySelectorAll('.difficulty-filter-btn').forEach(btn => {

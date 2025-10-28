@@ -752,34 +752,41 @@
                 card.className = `question-card ${isSolved ? 'solved' : ''}`;
                 
                 card.innerHTML = `
-                    <div class="question-number">#${q.id}</div>
-                    <div class="question-info">
-                        <h3 class="question-title">${q.name}</h3>
-                        <div class="question-meta">
-                            <span class="topic-badge">${q.topic}</span>
-                            <span class="difficulty-badge ${q.difficulty.toLowerCase()}">${q.difficulty}</span>
-                        </div>
-                    </div>
-                    <div class="question-actions">
-                        <div class="checkbox-wrapper">
-                            <input type="checkbox" class="solved-checkbox" 
-                                   data-id="${q.id}" ${isSolved ? 'checked' : ''}>
-                        </div>
-                        <a href="${q.url}" target="_blank" class="leetcode-link">Solve →</a>
-                    </div>
-                `;
+    <div class="question-number">#${q.id}</div>
+    <div class="question-info">
+        <h3 class="question-title">${q.name}</h3>
+        <div class="question-meta">
+            <span class="topic-badge">${q.topic}</span>
+            <span class="difficulty-badge ${q.difficulty.toLowerCase()}">${q.difficulty}</span>
+        </div>
+    </div>
+    <div class="question-actions">
+        <button class="mark-done-btn ${isSolved ? 'done' : ''}" data-id="${q.id}">
+            ${isSolved ? '✓ Done' : 'Mark as Done'}
+        </button>
+        <a href="${q.url}" target="_blank" class="leetcode-link">Solve →</a>
+    </div>
+`;
 
-                const checkbox = card.querySelector('.solved-checkbox');
-                checkbox.addEventListener('change', async (e) => {
-                    if (e.target.checked) {
-                        solvedQuestions.add(q.id);
-                    } else {
-                        solvedQuestions.delete(q.id);
-                    }
-                    await saveProgress();
-                    card.classList.toggle('solved', e.target.checked);
-                    updateStats();
-                });
+const markDoneBtn = card.querySelector('.mark-done-btn');
+markDoneBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const isDone = solvedQuestions.has(q.id);
+    
+    if (isDone) {
+        solvedQuestions.delete(q.id);
+        markDoneBtn.classList.remove('done');
+        markDoneBtn.textContent = 'Mark as Done';
+    } else {
+        solvedQuestions.add(q.id);
+        markDoneBtn.classList.add('done');
+        markDoneBtn.textContent = '✓ Done';
+    }
+    
+    await saveProgress();
+    card.classList.toggle('solved', solvedQuestions.has(q.id));
+    updateStats();
+});
 
                 container.appendChild(card);
             });
