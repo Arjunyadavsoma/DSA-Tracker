@@ -1,6 +1,12 @@
 import { auth } from './firebase-config.js';
 import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
+
+
+// ============================================
+// HEADER CLASS
+// ============================================
+
 class Header {
     constructor() {
         this.currentUser = null;
@@ -14,8 +20,11 @@ class Header {
         if (path.includes('topics.html')) return 'topics';
         if (path.includes('topic.html')) return 'topic';
         if (path.includes('questions.html')) return 'questions';
+        if (path.includes('random.html')) return 'random';
+
         if (path.includes('dashboard.html')) return 'dashboard';
         if (path.includes('login.html')) return 'login';
+
         if (path.includes('signup.html')) return 'signup';
         return 'home';
     }
@@ -23,6 +32,7 @@ class Header {
     init() {
         this.renderHeader();
         this.setupAuthListener();
+        
     }
 
     renderHeader() {
@@ -32,7 +42,7 @@ class Header {
         header.innerHTML = `
             <nav class="main-nav">
                 <div class="nav-container">
-                    <!-- Brand Section - Will be updated based on auth -->
+                    <!-- Brand Section -->
                     <a href="index.html" class="nav-brand" id="nav-brand">
                         <svg class="brand-logo" width="32" height="32" viewBox="0 0 32 32">
                             <rect width="32" height="32" rx="8" fill="#4f46e5"/>
@@ -58,6 +68,14 @@ class Header {
                             </svg>
                             All Questions
                         </a>
+                        <a href="random.html" class="nav-link ${this.currentPage === 'random' ? 'active' : ''}">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M2 8H8M10 8H16M8 2V8M8 10V16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+    Random
+</a>
+
                         <a href="dashboard.html" class="nav-link ${this.currentPage === 'dashboard' ? 'active' : ''}">
                             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                                 <rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.5"/>
@@ -70,6 +88,7 @@ class Header {
                     
                     <!-- Right Section -->
                     <div class="nav-right">
+                       
                         <div id="user-section" class="user-section" style="display: none;">
                             <div class="user-avatar">
                                 <span id="user-initial">U</span>
@@ -84,7 +103,7 @@ class Header {
                     </div>
                     
                     <!-- Mobile Menu Button -->
-                    <button class="mobile-toggle" id="mobile-toggle">
+                    <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle mobile menu">
                         <span></span>
                         <span></span>
                         <span></span>
@@ -95,6 +114,8 @@ class Header {
                 <div class="mobile-menu" id="mobile-menu">
                     <a href="topics.html" class="mobile-link ${this.currentPage === 'topics' || this.currentPage === 'topic' ? 'active' : ''}">Topics</a>
                     <a href="questions.html" class="mobile-link ${this.currentPage === 'questions' ? 'active' : ''}">All Questions</a>
+                    <a href="random.html" class="mobile-link ${this.currentPage === 'random' ? 'active' : ''}">Random</a>
+
                     <a href="dashboard.html" class="mobile-link ${this.currentPage === 'dashboard' ? 'active' : ''}">Dashboard</a>
                     <div id="mobile-auth" class="mobile-auth"></div>
                 </div>
@@ -116,10 +137,8 @@ class Header {
         const brandLink = document.getElementById('nav-brand');
         if (brandLink) {
             if (user) {
-                // Logged in users go to topics
                 brandLink.href = 'topics.html';
             } else {
-                // Guest users go to home
                 brandLink.href = 'index.html';
             }
         }
@@ -175,6 +194,9 @@ class Header {
         }
     }
 
+    
+    
+
     setupMobileMenu() {
         const toggle = document.getElementById('mobile-toggle');
         const menu = document.getElementById('mobile-menu');
@@ -192,6 +214,10 @@ class Header {
         });
     }
 }
+
+// ============================================
+// INITIALIZE HEADER
+// ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
     new Header();
