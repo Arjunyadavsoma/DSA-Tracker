@@ -550,7 +550,7 @@ footer p {
 }
 
 .topic-card-item::after {
-    content: '→';
+    content: '';
     position: absolute;
     bottom: 2rem;
     right: 2rem;

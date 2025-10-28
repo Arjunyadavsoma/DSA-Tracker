@@ -793,7 +793,7 @@
             </div>
             <div class="q-actions">
                 <button class="mark-done-btn ${isSolved ? 'done' : ''}" data-id="${q.id}">
-                    ${isSolved ? '✓ Done' : 'Mark as Done'}
+                    ${isSolved ? 'Done' : 'Mark as Done'}
                 </button>
                 <a href="${q.url}" target="_blank" class="solve-btn">Solve →</a>
             </div>
@@ -815,7 +815,7 @@
                 // Mark as done
                 solvedQuestions.add(q.id);
                 markDoneBtn.classList.add('done');
-                markDoneBtn.textContent = '✓ Done';
+                markDoneBtn.textContent = 'Done';
                 console.log('✅ Marked as solved:', q.id);
             }
             

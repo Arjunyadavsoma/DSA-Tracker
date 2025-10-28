@@ -811,7 +811,7 @@ class RandomQuestionGenerator {
             this.displayEmptyState();
             return;
         }
-
+    
         const questionsHTML = questions.map((question, index) => {
             const difficultyClass = question.difficulty.toLowerCase();
             const isSolved = this.solvedQuestions.has(question.id);
@@ -819,71 +819,52 @@ class RandomQuestionGenerator {
             return `
                 <div class="question-card ${isSolved ? 'completed' : ''}" 
                      data-question-id="${question.id}"
-                     style="animation-delay: ${index * 0.1}s">
-                    <div class="question-header">
-                        <div class="question-number">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="2"/>
-                                <text x="8" y="11" text-anchor="middle" font-size="10" fill="currentColor" font-weight="bold">${index + 1}</text>
-                            </svg>
-                            Question ${index + 1}
-                        </div>
-                        <div class="question-badges">
-                            <span class="badge badge-difficulty ${difficultyClass}">
-                                ${question.difficulty}
-                            </span>
-                            <span class="badge badge-topic">${question.topic}</span>
-                        </div>
-                    </div>
+                     style="animation-delay: ${index * 0.05}s">
                     
-                    <h3 class="question-title">${question.name}</h3>
-                    
-                    <div class="question-footer">
-                        <a href="${question.url}" target="_blank" rel="noopener noreferrer" class="platform-link ${question.url.includes('leetcode') ? 'leetcode' : 'gfg'}">
-                            ${question.url.includes('leetcode') ? `
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523 2.545 2.545 0 0 1 .619-1.164L9.13 8.114c1.058-1.134 3.204-1.27 4.43-.278l3.501 2.831c.593.48 1.461.387 1.94-.207a1.384 1.384 0 0 0-.207-1.943l-3.5-2.831c-.8-.647-1.766-1.045-2.774-1.202l2.015-2.158A1.384 1.384 0 0 0 13.483 0zm-2.866 12.815a1.38 1.38 0 0 0-1.38 1.382 1.38 1.38 0 0 0 1.38 1.382H20.79a1.38 1.38 0 0 0 1.38-1.382 1.38 1.38 0 0 0-1.38-1.382z"/>
-                                </svg>
-                                <span>Solve on LeetCode</span>
-                            ` : `
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2z"/>
-                                    <circle cx="12" cy="12" r="3"/>
-                                </svg>
-                                <span>Solve on GeeksforGeeks</span>
-                            `}
-                        </a>
+                    <div class="question-left">
+                        <div class="question-number">#${index + 1}</div>
+                        
+                        <div class="question-info">
+                            <h3 class="question-title">${question.name}</h3>
+                            <div class="question-badges">
+                                <span class="badge badge-topic">${question.topic}</span>
+                                <span class="badge badge-difficulty ${difficultyClass}">
+                                    ${question.difficulty}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="question-actions">
                         <button class="mark-done-btn ${isSolved ? 'completed' : ''}" 
                                 data-question-btn="${question.id}">
                             ${isSolved ? `
-                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
                                     <path d="M16.667 5L7.5 14.167L3.333 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
-                                ✓ Done
+                                Mark as Done
                             ` : `
-                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                    <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2"/>
-                                    <path d="M6 10L9 13L14 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
                                 Mark as Done
                             `}
                         </button>
+                        
+                        <a href="${question.url}" target="_blank" rel="noopener noreferrer" class="platform-link">
+                            Solve →
+                        </a>
                     </div>
                 </div>
             `;
         }).join('');
-
+    
         container.innerHTML = `<div class="questions-grid">${questionsHTML}</div>`;
         console.log('✅ Questions displayed successfully');
-
+    
         // Add event listeners to all mark done buttons
         document.querySelectorAll('.mark-done-btn').forEach(btn => {
             btn.addEventListener('click', (e) => this.handleMarkDone(e));
         });
     }
+    
 
     async handleMarkDone(e) {
         e.preventDefault();
@@ -926,7 +907,7 @@ class RandomQuestionGenerator {
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <path d="M16.667 5L7.5 14.167L3.333 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                    ✓ Done
+                    Done
                 `;
                 this.showSuccessToast('Question marked as completed! 🎉');
             }

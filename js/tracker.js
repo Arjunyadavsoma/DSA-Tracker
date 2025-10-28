@@ -216,7 +216,7 @@ function createQuestionRow(question) {
             <td><span class="difficulty-badge ${difficultyClass}">${question.difficulty}</span></td>
             <td>
                 <a href="${question.leetcodeUrl}" target="_blank" rel="noopener noreferrer" class="leetcode-link">
-                    Solve on LeetCode →
+                    Solve 
                 </a>
             </td>
         </tr>
