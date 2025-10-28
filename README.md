@@ -1,27 +1,59 @@
-# DSA Progress Tracker
+# 🎯 DSA Tracker - Love Babbar 450
 
-A static web application to track your Data Structures and Algorithms problem-solving progress.
+A modern, full-stack web application to track your progress on Love Babbar's famous DSA 450 questions.
 
-## Features
+![DSA Tracker](https://img.shields.io/badge/Questions-447-blue)
+![Topics](https://img.shields.io/badge/Topics-15-green)
+![License](https://img.shields.io/badge/License-MIT-yellow)
 
-- 🔐 Google Authentication with Firebase
-- 📊 Progress tracking across topics
-- 🔗 Direct LeetCode problem links
-- 💾 Cloud sync with Firestore
-- 📱 Responsive design
+## ✨ Features
 
-## Setup Instructions
+- 📊 **15 DSA Topics** - Comprehensive coverage of all data structures and algorithms
+- 🎯 **447 Curated Questions** - Love Babbar's handpicked problem set
+- 📈 **Progress Tracking** - Real-time progress sync with Firebase
+- 🎨 **Modern UI** - Clean, responsive design with smooth animations
+- 🔐 **Authentication** - Secure login with Firebase Auth
+- 💾 **Cloud Sync** - Your progress saved across devices
+- 📱 **Fully Responsive** - Works on desktop, tablet, and mobile
 
-1. Clone the repository
-2. Create a Firebase project at console.firebase.google.com
-3. Enable Authentication (Google provider and Email/Password)
-4. Enable Firestore Database
-5. Copy your Firebase config and paste it in `js/firebase-config.js`
-6. Add your Vercel deployment URL to Firebase Authorized Domains
-7. Push to GitHub
-8. Deploy on Vercel
+## 🛠️ Tech Stack
 
-## Local Development
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript
+- **Backend**: Firebase (Firestore, Authentication)
+- **Design**: Modern gradient UI with glassmorphism effects
+- **Icons**: Emoji-based iconography
 
-Simply open `index.html` in a browser or use a local server:
+## 📂 Project Structure
 
+sa-tracker/
+├── index.html # Landing page
+├── login.html # Authentication page
+├── topics.html # Topics overview
+├── topic.html # Individual topic questions
+├── questions.html # All questions view
+├── dashboard.html # User dashboard
+├── css/
+│ ├── reset.css # CSS reset
+│ ├── styles.css # Global styles
+│ ├── header.css # Header component
+│ ├── topics.css # Topics page styles
+│ ├── topic.css # Topic detail styles
+│ ├── questions.css # Questions list styles
+│ └── dashboard.css # Dashboard styles
+└── js/
+├── firebase-config.js # Firebase configuration
+└── header.js # Header component logic
+
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- A modern web browser
+- Firebase account (free tier works fine)
+
+### Installation
+
+1. **Clone the repository**
+git clone https://github.com/somaarjunyadav/dsa-tracker.git
+cd dsa-tracker

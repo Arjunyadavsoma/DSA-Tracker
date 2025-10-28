@@ -1,0 +1,738 @@
+/* ============================================
+   TOPIC PAGE - FULL WIDTH MODERN & PROFESSIONAL
+   ============================================ */
+
+   :root {
+    --page-bg: #ffffff;
+    --card-bg: #ffffff;
+    --border-color: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --brand-color: #6366f1;
+    --brand-hover: #4f46e5;
+    --brand-light: #eef2ff;
+    --easy-color: #22c55e;
+    --easy-bg: #f0fdf4;
+    --easy-border: #86efac;
+    --medium-color: #f59e0b;
+    --medium-bg: #fffbeb;
+    --medium-border: #fcd34d;
+    --hard-color: #ef4444;
+    --hard-bg: #fef2f2;
+    --hard-border: #fca5a5;
+    --solved-color: #10b981;
+    --solved-bg: #d1fae5;
+    --progress-bg: #e5e7eb;
+    --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+    --shadow-md: 0 4px 6px rgba(15, 23, 42, 0.08);
+    --shadow-lg: 0 8px 16px rgba(15, 23, 42, 0.1);
+}
+
+/* ==================== Page Layout - Full Width ==================== */
+.topic-page {
+    min-height: 100vh;
+    background: var(--page-bg);
+    padding: 8rem 3rem 2.5rem 3rem; /* Account for fixed header */
+    width: 100%;
+    margin: 0;
+}
+
+.topic-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ==================== Loading State ==================== */
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 1.5rem;
+}
+
+.spinner {
+    width: 64px;
+    height: 64px;
+    border: 5px solid var(--border-color);
+    border-top-color: var(--brand-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-state p {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+/* ==================== Breadcrumb Navigation ==================== */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+}
+
+.breadcrumb a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb a:hover {
+    color: var(--brand-color);
+}
+
+.breadcrumb-separator {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+.breadcrumb-current {
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+/* ==================== Topic Header - Full Width Hero ==================== */
+.topic-header {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+    border-radius: 0;
+    padding: 4rem 3rem;
+    margin: 0 -3rem 3rem -3rem; /* Full bleed effect */
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.topic-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.topic-header h1 {
+    font-size: 3rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    position: relative;
+    z-index: 1;
+}
+
+.topic-description {
+    font-size: 1.375rem;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 2.5rem;
+    line-height: 1.7;
+    font-weight: 500;
+    position: relative;
+    z-index: 1;
+}
+
+.topic-meta {
+    display: flex;
+    gap: 3rem;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+}
+
+.meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.meta-label {
+    font-size: 0.9375rem;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.meta-value {
+    font-size: 2.25rem;
+    font-weight: 900;
+    color: white;
+    letter-spacing: -0.02em;
+}
+
+/* ==================== Progress Section ==================== */
+.progress-section {
+    background: var(--card-bg);
+    border-radius: 1.25rem;
+    padding: 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.progress-header h2 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+.progress-percentage {
+    font-size: 2.25rem;
+    font-weight: 900;
+    color: var(--brand-color);
+    letter-spacing: -0.02em;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 20px;
+    background: var(--progress-bg);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--brand-color), #8b5cf6);
+    border-radius: 999px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.progress-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.4) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.progress-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 2rem;
+}
+
+.progress-stat {
+    text-align: center;
+    padding: 1.5rem;
+    background: var(--page-bg);
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-color);
+}
+
+.progress-stat-value {
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.progress-stat-value.easy { color: var(--easy-color); }
+.progress-stat-value.medium { color: var(--medium-color); }
+.progress-stat-value.hard { color: var(--hard-color); }
+
+.progress-stat-label {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+/* ==================== Filter Bar ==================== */
+.filter-bar {
+    background: var(--card-bg);
+    border-radius: 1.25rem;
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.filter-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.difficulty-filter-btn {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid var(--border-color);
+    border-radius: 0.75rem;
+    background: var(--card-bg);
+    color: var(--text-secondary);
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: capitalize;
+}
+
+.difficulty-filter-btn:hover {
+    border-color: var(--brand-color);
+    color: var(--brand-color);
+    transform: translateY(-2px);
+}
+
+.difficulty-filter-btn.active {
+    background: var(--brand-color);
+    border-color: var(--brand-color);
+    color: white;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.status-filter {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.status-filter input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    accent-color: var(--solved-color);
+}
+
+.status-filter label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+/* ==================== Questions Section ==================== */
+.questions-section h2 {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--text-primary);
+    margin-bottom: 2rem;
+    letter-spacing: -0.03em;
+}
+
+.questions-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* ==================== Question Item ==================== */
+.question-item {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 1.25rem;
+    padding: 2rem;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    gap: 2rem;
+    align-items: center;
+}
+
+.question-item:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--brand-color);
+}
+
+.question-item.solved {
+    background: var(--solved-bg);
+    border-color: var(--solved-color);
+}
+
+/* Question Number */
+.q-number {
+    font-size: 1.375rem;
+    font-weight: 900;
+    color: var(--text-muted);
+    min-width: 60px;
+    text-align: center;
+    letter-spacing: -0.02em;
+}
+
+.question-item.solved .q-number {
+    color: var(--solved-color);
+}
+
+/* Question Details */
+.q-details {
+    flex: 1;
+}
+
+.q-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+}
+
+.question-item.solved .q-title {
+    color: var(--solved-color);
+}
+
+.q-meta {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.difficulty-badge {
+    padding: 0.375rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    border-radius: 0.5rem;
+    text-transform: capitalize;
+}
+
+.difficulty-badge.easy {
+    background: var(--easy-bg);
+    color: var(--easy-color);
+    border: 2px solid var(--easy-border);
+}
+
+.difficulty-badge.medium {
+    background: var(--medium-bg);
+    color: var(--medium-color);
+    border: 2px solid var(--medium-border);
+}
+
+.difficulty-badge.hard {
+    background: var(--hard-bg);
+    color: var(--hard-color);
+    border: 2px solid var(--hard-border);
+}
+
+/* Question Actions */
+.q-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.checkbox-container {
+    position: relative;
+}
+
+.solved-check {
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    accent-color: var(--solved-color);
+    transition: transform 0.2s ease;
+}
+
+.solved-check:checked {
+    transform: scale(1.15);
+}
+
+.solve-btn {
+    padding: 0.875rem 1.75rem;
+    background: linear-gradient(135deg, var(--brand-color), #8b5cf6);
+    color: white;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1rem;
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    display: inline-block;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.solve-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+
+/* ==================== Empty State ==================== */
+.empty-questions {
+    background: var(--card-bg);
+    border: 2px dashed var(--border-color);
+    border-radius: 1.25rem;
+    padding: 5rem 3rem;
+    text-align: center;
+}
+
+.empty-icon {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+}
+
+.empty-questions h3 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+}
+
+.empty-questions p {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* ==================== Back Button ==================== */
+.back-to-topics {
+    margin-top: 3rem;
+    text-align: center;
+}
+
+.back-btn {
+    padding: 1rem 2.5rem;
+    background: var(--card-bg);
+    color: var(--brand-color);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.125rem;
+    border: 2px solid var(--brand-color);
+    border-radius: 0.75rem;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: var(--brand-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+}
+
+/* ==================== Responsive Design ==================== */
+@media (max-width: 1280px) {
+    .topic-page {
+        padding: 7rem 2rem 2rem 2rem;
+    }
+
+    .topic-header {
+        margin: 0 -2rem 2.5rem -2rem;
+        padding: 3.5rem 2rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .topic-header h1 {
+        font-size: 2.5rem;
+    }
+
+    .topic-description {
+        font-size: 1.125rem;
+    }
+
+    .question-item {
+        grid-template-columns: auto 1fr auto;
+        gap: 1.5rem;
+    }
+
+    .q-actions {
+        grid-column: 2 / -1;
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 768px) {
+    .topic-page {
+        padding: 6rem 1.5rem 1.5rem 1.5rem;
+    }
+
+    .topic-header {
+        margin: 0 -1.5rem 2rem -1.5rem;
+        padding: 3rem 1.5rem;
+    }
+
+    .topic-header h1 {
+        font-size: 2rem;
+    }
+
+    .topic-description {
+        font-size: 1rem;
+    }
+
+    .topic-meta {
+        gap: 2rem;
+    }
+
+    .meta-value {
+        font-size: 1.75rem;
+    }
+
+    .progress-section,
+    .filter-bar {
+        padding: 1.75rem;
+    }
+
+    .filter-bar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .question-item {
+        grid-template-columns: 1fr;
+        padding: 1.5rem;
+        gap: 1.25rem;
+    }
+
+    .q-number {
+        text-align: left;
+        min-width: auto;
+    }
+
+    .q-actions {
+        grid-column: 1;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .solve-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .topic-page {
+        padding: 5.5rem 1rem 1rem 1rem;
+    }
+
+    .topic-header {
+        margin: 0 -1rem 1.5rem -1rem;
+        padding: 2.5rem 1rem;
+    }
+
+    .topic-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .progress-section {
+        padding: 1.5rem;
+    }
+
+    .progress-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .question-item {
+        padding: 1.25rem;
+    }
+
+    .q-title {
+        font-size: 1.0625rem;
+    }
+}
+
+/* ==================== Animations ==================== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.question-item {
+    animation: fadeInUp 0.4s ease;
+}
+
+.question-item:nth-child(1) { animation-delay: 0.05s; }
+.question-item:nth-child(2) { animation-delay: 0.08s; }
+.question-item:nth-child(3) { animation-delay: 0.11s; }
+.question-item:nth-child(4) { animation-delay: 0.14s; }
+.question-item:nth-child(5) { animation-delay: 0.17s; }
+
+/* ==================== Accessibility ==================== */
+.question-item:focus-within {
+    outline: 3px solid var(--brand-color);
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .question-item,
+    .solve-btn,
+    .back-btn {
+        animation: none;
+        transition: none;
+    }
+
+    .question-item:hover {
+        transform: none;
+    }
+}
+
+@media print {
+    .topic-page {
+        padding: 1rem;
+    }
+
+    .breadcrumb,
+    .filter-bar,
+    .q-actions,
+    .back-to-topics {
+        display: none;
+    }
+
+    .topic-header {
+        margin: 0;
+        background: white;
+        color: #000;
+    }
+
+    .question-item {
+        break-inside: avoid;
+    }
+}

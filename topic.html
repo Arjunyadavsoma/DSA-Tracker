@@ -4,84 +4,127 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Topic - DSA Tracker</title>
+    
+    <!-- Base CSS -->
     <link rel="stylesheet" href="./css/reset.css">
     <link rel="stylesheet" href="./css/styles.css">
+    
+    <!-- Page-specific CSS -->
+    <link rel="stylesheet" href="./css/header.css">
+    <link rel="stylesheet" href="./css/topic.css">
 </head>
 <body>
     <header></header>
+    
+    <main class="topic-page">
+        <div class="topic-container">
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb">
+                <a href="topics.html">Topics</a>
+                <span class="breadcrumb-separator">›</span>
+                <span id="breadcrumb-topic" class="breadcrumb-current">Loading...</span>
+            </nav>
 
-    <main class="topic-detail-page">
-        <div class="topic-detail-header">
-            <div class="topic-header-content">
-                <div id="topic-icon" class="topic-icon-large">🔗</div>
-                <div>
-                    <h1 id="topic-title">Loading...</h1>
-                    <p id="topic-subtitle">0 Questions</p>
+            <!-- Loading State -->
+            <div id="loading" class="loading-state">
+                <div class="spinner"></div>
+                <p>Loading questions...</p>
+            </div>
+
+            <!-- Topic Header -->
+            <header id="topic-header" class="topic-header" style="display: none;">
+                <h1 id="topic-title">Loading...</h1>
+                <p id="topic-description" class="topic-description">Practice questions</p>
+                <div class="topic-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Total</span>
+                        <span id="total-count" class="meta-value">0</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Solved</span>
+                        <span id="solved-count" class="meta-value">0</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Progress</span>
+                        <span id="progress-percent" class="meta-value">0%</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Progress Section -->
+            <section id="progress-section" class="progress-section" style="display: none;">
+                <div class="progress-header">
+                    <h2>Your Progress</h2>
+                    <span id="progress-percentage" class="progress-percentage">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%"></div>
+                </div>
+                <div class="progress-stats">
+                    <div class="progress-stat">
+                        <div class="progress-stat-value easy" id="easy-solved">0</div>
+                        <div class="progress-stat-label">Easy Solved</div>
+                    </div>
+                    <div class="progress-stat">
+                        <div class="progress-stat-value medium" id="medium-solved">0</div>
+                        <div class="progress-stat-label">Medium Solved</div>
+                    </div>
+                    <div class="progress-stat">
+                        <div class="progress-stat-value hard" id="hard-solved">0</div>
+                        <div class="progress-stat-label">Hard Solved</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Filter Bar -->
+            <div id="filter-bar" class="filter-bar" style="display: none;">
+                <div class="filter-group">
+                    <span class="filter-label">Filter:</span>
+                    <button class="difficulty-filter-btn active" data-filter="all">All</button>
+                    <button class="difficulty-filter-btn" data-filter="easy">Easy</button>
+                    <button class="difficulty-filter-btn" data-filter="medium">Medium</button>
+                    <button class="difficulty-filter-btn" data-filter="hard">Hard</button>
+                </div>
+                <div class="status-filter">
+                    <input type="checkbox" id="show-solved" />
+                    <label for="show-solved">Show only solved</label>
                 </div>
             </div>
-            <div class="topic-stats-mini">
-                <div class="stat-mini">
-                    <strong id="solved-count">0</strong>
-                    <span>Solved</span>
-                </div>
-                <div class="stat-mini">
-                    <strong id="total-count">0</strong>
-                    <span>Total</span>
-                </div>
-                <div class="stat-mini">
-                    <strong id="progress-percent">0%</strong>
-                    <span>Progress</span>
-                </div>
+
+            <!-- Questions Section -->
+            <section id="questions-section" class="questions-section" style="display: none;">
+                <h2>Questions</h2>
+                <div id="questions-grid" class="questions-grid"></div>
+            </section>
+
+            <!-- Error Message -->
+            <div id="error-message" style="display: none;" class="empty-questions">
+                <div class="empty-icon">⚠️</div>
+                <h3>Error Loading Questions</h3>
+                <p>Please refresh the page or try again later.</p>
             </div>
-        </div>
 
-        <div class="filter-bar-simple">
-            <input type="text" id="search" placeholder="Search questions..." class="search-input">
-            <select id="difficulty" class="filter-dropdown">
-                <option value="">All Difficulties</option>
-                <option value="Easy">Easy</option>
-                <option value="Medium">Medium</option>
-                <option value="Hard">Hard</option>
-            </select>
-        </div>
-
-        <div id="loading" class="loading-indicator">
-            <div class="spinner-large"></div>
-            <p>Loading questions...</p>
-        </div>
-
-        <div id="error-message" style="display: none; padding: 2rem; text-align: center; color: var(--danger-color);">
-            <p>Error loading questions. Please refresh the page.</p>
-        </div>
-
-        <div class="problems-container">
-            <table id="questions-table" class="problems-table" style="display: none;">
-                <thead>
-                    <tr>
-                        <th class="col-status">Status</th>
-                        <th class="col-title">Problem</th>
-                        <th class="col-difficulty">Difficulty</th>
-                        <th class="col-link">Link</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body"></tbody>
-            </table>
+            <!-- Back Button -->
+            <div class="back-to-topics">
+                <a href="topics.html" class="back-btn">← Back to Topics</a>
+            </div>
         </div>
     </main>
-
+    
     <footer>
         <p>&copy; 2025 DSA Tracker. Built for interview preparation.</p>
     </footer>
-
+    
     <script type="module" src="./js/header.js"></script>
-
+    
     <script type="module">
         import { auth, db } from './js/firebase-config.js';
         import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-        // COMPLETE LOVE BABBAR 450 QUESTIONS DATABASE
-        const QUESTIONS_DATA = {
+        // ========== TOPICS METADATA ==========
+        const TOPICS_DATA =  {
+           
             "Array": [
                 { id: 1, name: "Reverse the array", difficulty: "Easy", url: "https://practice.geeksforgeeks.org/problems/reverse-an-array/0" },
                 { id: 2, name: "Find maximum and minimum element in an array", difficulty: "Easy", url: "https://practice.geeksforgeeks.org/problems/find-minimum-and-maximum-element-in-an-array4428/1" },
@@ -574,172 +617,254 @@
                 { id: 447, name: "Power set", difficulty: "Medium", url: "https://leetcode.com/problems/subsets/" }
             ]
         };
-
-        const TOPICS_META = {
-            "Array": { icon: "📊", color: "#8b5cf6" },
-            "Matrix": { icon: "🔢", color: "#ec4899" },
-            "String": { icon: "📝", color: "#06b6d4" },
-            "Searching & Sorting": { icon: "🔍", color: "#10b981" },
-            "LinkedList": { icon: "🔗", color: "#f59e0b" },
-            "Binary Trees": { icon: "🌲", color: "#8b5cf6" },
-            "Binary Search Trees": { icon: "🌳", color: "#ec4899" },
-            "Greedy": { icon: "💰", color: "#06b6d4" },
-            "BackTracking": { icon: "🔙", color: "#10b981" },
-            "Stacks and Queues": { icon: "📚", color: "#f59e0b" },
-            "Heap": { icon: "⛰️", color: "#8b5cf6" },
-            "Graph": { icon: "🕸️", color: "#ec4899" },
-            "Trie": { icon: "🔤", color: "#06b6d4" },
-            "Dynamic Programming": { icon: "⚡", color: "#10b981" },
-            "Bit Manipulation": { icon: "🔢", color: "#f59e0b" }
+        const topicDescriptions = {
+            "Array": "Master array manipulation, searching, and sorting algorithms",
+            "Matrix": "2D array problems and matrix operations",
+            "String": "String manipulation and pattern matching",
+            "Searching & Sorting": "Binary search and advanced sorting techniques",
+            "LinkedList": "Linked list operations and pointer manipulation",
+            "Binary Trees": "Tree traversals and tree problems",
+            "Binary Search Trees": "BST operations and properties",
+            "Greedy": "Greedy algorithms and optimization",
+            "BackTracking": "Backtracking and recursion problems",
+            "Stacks and Queues": "Stack and queue operations",
+            "Heap": "Heap data structure and priority queues",
+            "Graph": "Graph algorithms and traversals",
+            "Trie": "Trie data structure and applications",
+            "Dynamic Programming": "DP patterns and optimization",
+            "Bit Manipulation": "Bitwise operations and tricks"
         };
 
-        let currentTopic = '';
-        let topicQuestions = [];
-        let solvedQuestions = new Set();
         let currentUser = null;
+        let solvedQuestions = new Set();
+        let topicQuestions = [];
+        let filteredQuestions = [];
 
-        async function init() {
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                currentTopic = urlParams.get('name') || 'Array';
-                
-                topicQuestions = QUESTIONS_DATA[currentTopic] || [];
-                
-                document.getElementById('topic-title').textContent = currentTopic;
-                document.getElementById('topic-subtitle').textContent = `${topicQuestions.length} Questions`;
-                
-                const topicMeta = TOPICS_META[currentTopic];
-                if (topicMeta) {
-                    const iconEl = document.getElementById('topic-icon');
-                    iconEl.textContent = topicMeta.icon;
-                    iconEl.style.background = topicMeta.color;
-                }
-                
-                onAuthStateChanged(auth, async (user) => {
-                    currentUser = user;
-                    await loadProgress();
-                    renderQuestions();
-                    updateStats();
-                    
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('questions-table').style.display = 'table';
-                });
+        const urlParams = new URLSearchParams(window.location.search);
+        const topicName = urlParams.get('name');
 
-                document.getElementById('search').addEventListener('input', filterQuestions);
-                document.getElementById('difficulty').addEventListener('change', filterQuestions);
-                
-            } catch (error) {
-                console.error('Init error:', error);
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('error-message').style.display = 'block';
+        console.log('🔍 Topic from URL:', topicName);
+        console.log('📚 Available topics:', Object.keys(TOPICS_DATA));
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                console.log('✅ User logged in:', user.email);
+                await loadProgress(user.uid);
+                await initializePage();
+            } else {
+                console.log('❌ User not logged in, redirecting...');
+                window.location.href = 'login.html';
             }
-        }
+        });
 
-        async function loadProgress() {
+        async function loadProgress(uid) {
             try {
-                if (currentUser) {
-                    const docRef = doc(db, 'userProgress', currentUser.uid);
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists()) {
-                        solvedQuestions = new Set(docSnap.data().solved || []);
-                    }
-                }
+                const docRef = doc(db, 'userProgress', uid);
+                const docSnap = await getDoc(docRef);
                 
-                const saved = localStorage.getItem('solvedQuestions');
-                if (saved && solvedQuestions.size === 0) {
-                    solvedQuestions = new Set(JSON.parse(saved));
+                if (docSnap.exists()) {
+                    solvedQuestions = new Set(docSnap.data().solved || []);
+                    console.log('✅ Loaded solved questions:', solvedQuestions.size);
+                } else {
+                    console.log('ℹ️ No saved progress found');
                 }
             } catch (error) {
-                console.error('Error loading progress:', error);
+                console.error('❌ Error loading progress:', error);
             }
         }
 
         async function saveProgress() {
+            if (!currentUser) return;
+            
             try {
-                const solvedArray = [...solvedQuestions];
-                localStorage.setItem('solvedQuestions', JSON.stringify(solvedArray));
-                
-                if (currentUser) {
-                    await setDoc(doc(db, 'userProgress', currentUser.uid), {
-                        solved: solvedArray,
-                        lastUpdated: new Date().toISOString()
-                    });
-                }
+                const docRef = doc(db, 'userProgress', currentUser.uid);
+                await setDoc(docRef, {
+                    solved: Array.from(solvedQuestions),
+                    lastUpdated: new Date().toISOString()
+                }, { merge: true });
+                console.log('✅ Progress saved');
             } catch (error) {
-                console.error('Error saving progress:', error);
+                console.error('❌ Error saving progress:', error);
             }
         }
 
-        function renderQuestions(questions = topicQuestions) {
-            const tbody = document.getElementById('table-body');
-            tbody.innerHTML = '';
+        async function initializePage() {
+            console.log('🚀 Initializing page for topic:', topicName);
+            document.getElementById('loading').style.display = 'none';
 
-            if (questions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem;">No questions found.</td></tr>';
+            if (!topicName) {
+                showError('No topic specified in URL');
                 return;
             }
 
-            questions.forEach((q, index) => {
-                const isSolved = solvedQuestions.has(q.id);
-                const row = document.createElement('tr');
-                row.className = 'problem-row';
-                
-                row.innerHTML = `
-                    <td class="col-status">
-                        <input type="checkbox" class="status-checkbox" ${isSolved ? 'checked' : ''} data-id="${q.id}">
-                    </td>
-                    <td class="col-title">
-                        <span class="question-number">${index + 1}.</span>
-                        <a href="${q.url}" target="_blank" class="problem-link">${q.name}</a>
-                    </td>
-                    <td class="col-difficulty">
-                        <span class="difficulty-tag ${q.difficulty.toLowerCase()}">${q.difficulty}</span>
-                    </td>
-                    <td class="col-link">
-                        <a href="${q.url}" target="_blank" class="leetcode-link">Solve →</a>
-                    </td>
+            // Get questions array directly
+            topicQuestions = TOPICS_DATA[topicName];
+
+            if (!topicQuestions || topicQuestions.length === 0) {
+                console.error('❌ Topic not found:', topicName);
+                console.log('📚 Available topics:', Object.keys(TOPICS_DATA));
+                showError(`Topic "${topicName}" not found`);
+                return;
+            }
+
+            console.log(`✅ Loaded ${topicQuestions.length} questions for ${topicName}`);
+            filteredQuestions = [...topicQuestions];
+
+            updateTopicHeader();
+            updateProgress();
+            renderQuestions(filteredQuestions);
+            setupFilters();
+
+            document.getElementById('topic-header').style.display = 'block';
+            document.getElementById('progress-section').style.display = 'block';
+            document.getElementById('filter-bar').style.display = 'flex';
+            document.getElementById('questions-section').style.display = 'block';
+        }
+
+        function updateTopicHeader() {
+            document.getElementById('breadcrumb-topic').textContent = topicName;
+            document.getElementById('topic-title').textContent = topicName;
+            document.getElementById('topic-description').textContent = topicDescriptions[topicName] || "Practice questions";
+            
+            const solved = topicQuestions.filter(q => solvedQuestions.has(q.id)).length;
+            const total = topicQuestions.length;
+            const percentage = total > 0 ? Math.round((solved / total) * 100) : 0;
+
+            document.getElementById('total-count').textContent = total;
+            document.getElementById('solved-count').textContent = solved;
+            document.getElementById('progress-percent').textContent = percentage + '%';
+        }
+
+        function updateProgress() {
+            const solved = topicQuestions.filter(q => solvedQuestions.has(q.id)).length;
+            const total = topicQuestions.length;
+            const percentage = total > 0 ? Math.round((solved / total) * 100) : 0;
+
+            document.getElementById('progress-percentage').textContent = percentage + '%';
+            document.getElementById('progress-bar-fill').style.width = percentage + '%';
+
+            let easySolved = 0, mediumSolved = 0, hardSolved = 0;
+            
+            topicQuestions.forEach(q => {
+                if (solvedQuestions.has(q.id)) {
+                    if (q.difficulty === 'Easy') easySolved++;
+                    else if (q.difficulty === 'Medium') mediumSolved++;
+                    else if (q.difficulty === 'Hard') hardSolved++;
+                }
+            });
+
+            document.getElementById('easy-solved').textContent = easySolved;
+            document.getElementById('medium-solved').textContent = mediumSolved;
+            document.getElementById('hard-solved').textContent = hardSolved;
+        }
+
+        function renderQuestions(questions) {
+            const container = document.getElementById('questions-grid');
+            container.innerHTML = '';
+
+            console.log(`🎨 Rendering ${questions.length} questions`);
+
+            if (questions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-questions">
+                        <div class="empty-icon">📝</div>
+                        <h3>No Questions Found</h3>
+                        <p>Try adjusting your filters.</p>
+                    </div>
                 `;
+                return;
+            }
+
+            questions.forEach(q => {
+                const isSolved = solvedQuestions.has(q.id);
                 
-                const checkbox = row.querySelector('.status-checkbox');
+                const item = document.createElement('div');
+                item.className = `question-item ${isSolved ? 'solved' : ''}`;
+                
+                item.innerHTML = `
+                    <div class="q-number">#${q.id}</div>
+                    <div class="q-details">
+                        <h3 class="q-title">${q.name}</h3>
+                        <div class="q-meta">
+                            <span class="difficulty-badge ${q.difficulty.toLowerCase()}">${q.difficulty}</span>
+                        </div>
+                    </div>
+                    <div class="q-actions">
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="solved-check" 
+                                   data-id="${q.id}" ${isSolved ? 'checked' : ''}>
+                        </div>
+                        <a href="${q.url}" target="_blank" class="solve-btn">Solve →</a>
+                    </div>
+                `;
+
+                const checkbox = item.querySelector('.solved-check');
                 checkbox.addEventListener('change', async (e) => {
-                    const id = parseInt(e.target.dataset.id);
                     if (e.target.checked) {
-                        solvedQuestions.add(id);
+                        solvedQuestions.add(q.id);
+                        console.log('✅ Marked as solved:', q.id);
                     } else {
-                        solvedQuestions.delete(id);
+                        solvedQuestions.delete(q.id);
+                        console.log('❌ Unmarked:', q.id);
                     }
                     await saveProgress();
-                    updateStats();
+                    updateTopicHeader();
+                    updateProgress();
+                    item.classList.toggle('solved', e.target.checked);
                 });
-                
-                tbody.appendChild(row);
+
+                container.appendChild(item);
             });
+
+            console.log('✅ Questions rendered successfully');
+        }
+
+        function setupFilters() {
+            document.querySelectorAll('.difficulty-filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.difficulty-filter-btn').forEach(b => 
+                        b.classList.remove('active')
+                    );
+                    btn.classList.add('active');
+                    filterQuestions();
+                });
+            });
+
+            const showSolvedCheckbox = document.getElementById('show-solved');
+            if (showSolvedCheckbox) {
+                showSolvedCheckbox.addEventListener('change', filterQuestions);
+            }
         }
 
         function filterQuestions() {
-            const search = document.getElementById('search').value.toLowerCase();
-            const difficulty = document.getElementById('difficulty').value;
+            const activeFilter = document.querySelector('.difficulty-filter-btn.active')?.dataset.filter || 'all';
+            const showSolved = document.getElementById('show-solved')?.checked || false;
 
-            const filtered = topicQuestions.filter(q => {
-                const matchSearch = q.name.toLowerCase().includes(search);
-                const matchDifficulty = !difficulty || q.difficulty === difficulty;
-                return matchSearch && matchDifficulty;
+            filteredQuestions = topicQuestions.filter(q => {
+                const difficultyMatch = activeFilter === 'all' || 
+                                       q.difficulty.toLowerCase() === activeFilter;
+                const solvedMatch = !showSolved || solvedQuestions.has(q.id);
+                
+                return difficultyMatch && solvedMatch;
             });
 
-            renderQuestions(filtered);
+            console.log(`🔍 Filtered to ${filteredQuestions.length} questions`);
+            renderQuestions(filteredQuestions);
         }
 
-        function updateStats() {
-            const solved = topicQuestions.filter(q => solvedQuestions.has(q.id)).length;
-            const total = topicQuestions.length;
-            const percent = total > 0 ? Math.round((solved / total) * 100) : 0;
-            
-            document.getElementById('solved-count').textContent = solved;
-            document.getElementById('total-count').textContent = total;
-            document.getElementById('progress-percent').textContent = percent + '%';
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            const errorDiv = document.getElementById('error-message');
+            if (errorDiv) {
+                errorDiv.style.display = 'block';
+                const errorText = errorDiv.querySelector('p');
+                if (errorText) {
+                    errorText.textContent = message;
+                }
+            }
+            console.error('❌', message);
         }
-
-        init();
     </script>
 </body>
 </html>
