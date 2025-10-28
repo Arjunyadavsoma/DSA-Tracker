@@ -23,30 +23,6 @@ A modern, full-stack web application to track your progress on Love Babbar's fam
 - **Design**: Modern gradient UI with glassmorphism effects
 - **Icons**: Emoji-based iconography
 
-## 📂 Project Structure
-
-sa-tracker/
-├── index.html # Landing page
-├── login.html # Authentication page
-├── topics.html # Topics overview
-├── topic.html # Individual topic questions
-├── questions.html # All questions view
-├── dashboard.html # User dashboard
-├── css/
-│ ├── reset.css # CSS reset
-│ ├── styles.css # Global styles
-│ ├── header.css # Header component
-│ ├── topics.css # Topics page styles
-│ ├── topic.css # Topic detail styles
-│ ├── questions.css # Questions list styles
-│ └── dashboard.css # Dashboard styles
-└── js/
-├── firebase-config.js # Firebase configuration
-└── header.js # Header component logic
-
-
-## 🚀 Getting Started
-
 ### Prerequisites
 
 - A modern web browser
@@ -55,5 +31,5 @@ sa-tracker/
 ### Installation
 
 1. **Clone the repository**
-git clone https://github.com/somaarjunyadav/dsa-tracker.git
+git clone https://github.com/Arjunyadavsoma/dsa-tracker.git
 cd dsa-tracker
