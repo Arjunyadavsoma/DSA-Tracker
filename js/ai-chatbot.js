@@ -1,4 +1,4 @@
-// AI Chatbot - Complete Working Version
+// AI Chatbot - Complete Working Version with Streaming
 class AIChatbot {
     constructor() {
         this.isOpen = false;
@@ -459,42 +459,71 @@ class AIChatbot {
         console.log('📥 Response status:', response.status);
 
         if (!response.ok) {
-            const error = await response.json();
-            console.error('API Error:', error);
-            throw new Error(error.error || `Server error ${response.status}`);
+            throw new Error(`Server error ${response.status}`);
         }
 
-        const data = await response.json();
-        console.log('✅ Got response');
-        
-        const content = data.choices?.[0]?.message?.content || 'No response received';
-        
-        // Simulate typing effect
+        await this.handleStreamingResponse(response);
+    }
+
+    async handleStreamingResponse(response) {
         const container = document.getElementById('ai-chatbot-messages');
+        
         const messageDiv = document.createElement('div');
         messageDiv.className = 'chat-message ai';
         const bubble = document.createElement('div');
         bubble.className = 'message-bubble';
+        bubble.innerHTML = '<span class="streaming-cursor"></span>';
         messageDiv.appendChild(bubble);
         container.appendChild(messageDiv);
 
-        let index = 0;
-        const typeSpeed = 20;
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let accumulatedText = '';
+        let buffer = '';
 
-        const typeEffect = () => {
-            if (index < content.length) {
-                bubble.innerHTML = this.formatMessage(content.substring(0, index + 1)) + 
-                    '<span class="streaming-cursor"></span>';
-                index++;
-                container.scrollTop = container.scrollHeight;
-                setTimeout(typeEffect, typeSpeed);
-            } else {
-                bubble.querySelector('.streaming-cursor')?.remove();
-                this.messages.push({ role: 'assistant', content });
+        try {
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) {
+                    console.log('✅ Stream completed');
+                    break;
+                }
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                buffer = lines.pop() || '';
+
+                for (const line of lines) {
+                    if (line.trim() === '' || line.trim() === 'data: [DONE]') continue;
+                    
+                    if (line.startsWith('data: ')) {
+                        try {
+                            const jsonStr = line.slice(6);
+                            const data = JSON.parse(jsonStr);
+                            const content = data.choices?.[0]?.delta?.content;
+                            
+                            if (content) {
+                                accumulatedText += content;
+                                bubble.innerHTML = this.formatMessage(accumulatedText) + 
+                                    '<span class="streaming-cursor"></span>';
+                                container.scrollTop = container.scrollHeight;
+                            }
+                        } catch (e) {
+                            // Skip invalid JSON lines
+                        }
+                    }
+                }
             }
-        };
 
-        typeEffect();
+            bubble.querySelector('.streaming-cursor')?.remove();
+            this.messages.push({ role: 'assistant', content: accumulatedText });
+            console.log('✅ Message saved');
+
+        } catch (error) {
+            console.error('Stream error:', error);
+            bubble.querySelector('.streaming-cursor')?.remove();
+            throw error;
+        }
     }
 
     addMessage(content, role) {
