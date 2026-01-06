@@ -1,4 +1,4 @@
-// AI Chatbot - Complete Working Version with Streaming
+// AI Chatbot - Complete with Modern Formatting
 class AIChatbot {
     constructor() {
         this.isOpen = false;
@@ -146,45 +146,168 @@ class AIChatbot {
                 justify-content: flex-start;
             }
             .message-bubble {
-                max-width: 80%;
-                padding: 0.875rem 1.125rem;
-                border-radius: 16px;
-                font-size: 0.9rem;
-                line-height: 1.6;
+                max-width: 85%;
+                padding: 1rem 1.25rem;
+                border-radius: 18px;
+                font-size: 0.95rem;
+                line-height: 1.7;
                 word-wrap: break-word;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             }
             .chat-message.user .message-bubble {
-                background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+                background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
                 color: white;
+                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
             }
             .chat-message.ai .message-bubble {
                 background: white;
                 color: #1f2937;
                 border: 1px solid #e5e7eb;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
             }
-            .message-bubble code {
-                background: rgba(0, 0, 0, 0.1);
-                padding: 2px 6px;
-                border-radius: 4px;
-                font-size: 0.85em;
-                font-family: 'Courier New', monospace;
+            
+            /* Headers */
+            .msg-h1, .msg-h2, .msg-h3 {
+                margin: 1rem 0 0.75rem 0;
+                font-weight: 700;
+                line-height: 1.3;
+                color: #1f2937;
             }
-            .chat-message.user .message-bubble code {
-                background: rgba(255, 255, 255, 0.2);
+            .msg-h1 { font-size: 1.5rem; }
+            .msg-h2 { font-size: 1.25rem; }
+            .msg-h3 { font-size: 1.1rem; }
+            
+            /* Lists */
+            .msg-ul, .msg-ol {
+                margin: 0.75rem 0;
+                padding-left: 1.5rem;
             }
-            .message-bubble pre {
-                background: #1f2937;
-                color: #e5e7eb;
-                padding: 0.75rem;
-                border-radius: 8px;
-                overflow-x: auto;
+            .msg-li, .msg-li-num {
                 margin: 0.5rem 0;
+                line-height: 1.6;
             }
-            .message-bubble pre code {
-                background: transparent;
-                padding: 0;
-                color: #e5e7eb;
+            
+            /* Links */
+            .msg-link {
+                color: #6366f1;
+                text-decoration: none;
+                border-bottom: 1px solid #6366f1;
+                transition: all 0.2s;
             }
+            .msg-link:hover {
+                color: #4f46e5;
+                border-bottom-color: #4f46e5;
+            }
+            
+            /* Inline code */
+            .inline-code {
+                background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+                color: #dc2626;
+                padding: 3px 8px;
+                border-radius: 6px;
+                font-size: 0.9em;
+                font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Courier New', monospace;
+                font-weight: 500;
+                border: 1px solid #e5e7eb;
+            }
+            .chat-message.user .inline-code {
+                background: rgba(255, 255, 255, 0.25);
+                color: white;
+                border: 1px solid rgba(255, 255, 255, 0.3);
+            }
+            
+            /* Code blocks */
+            .code-block-wrapper {
+                margin: 1rem 0;
+                border-radius: 12px;
+                overflow: hidden;
+                background: #1e293b;
+                border: 1px solid #334155;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            .code-block-header {
+                background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+                padding: 0.75rem 1rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid #475569;
+            }
+            .code-language {
+                font-size: 0.75rem;
+                font-weight: 600;
+                color: #94a3b8;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                font-family: 'SF Mono', monospace;
+            }
+            .copy-code-btn {
+                background: rgba(148, 163, 184, 0.1);
+                border: 1px solid rgba(148, 163, 184, 0.2);
+                color: #94a3b8;
+                padding: 0.4rem 0.75rem;
+                border-radius: 6px;
+                font-size: 0.75rem;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 0.35rem;
+                transition: all 0.2s;
+                font-weight: 500;
+            }
+            .copy-code-btn:hover {
+                background: rgba(148, 163, 184, 0.2);
+                border-color: rgba(148, 163, 184, 0.4);
+                color: #cbd5e1;
+            }
+            .copy-code-btn svg {
+                width: 14px;
+                height: 14px;
+            }
+            .code-block-wrapper pre {
+                background: #1e293b;
+                color: #e2e8f0;
+                padding: 1.25rem;
+                margin: 0;
+                overflow-x: auto;
+                font-size: 0.875rem;
+                line-height: 1.7;
+                font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Courier New', monospace;
+            }
+            .code-block-wrapper pre::-webkit-scrollbar {
+                height: 8px;
+            }
+            .code-block-wrapper pre::-webkit-scrollbar-track {
+                background: #0f172a;
+                border-radius: 4px;
+            }
+            .code-block-wrapper pre::-webkit-scrollbar-thumb {
+                background: #475569;
+                border-radius: 4px;
+            }
+            .code-block-wrapper code {
+                background: transparent !important;
+                padding: 0 !important;
+                color: inherit !important;
+                border: none !important;
+            }
+            
+            /* Strong and emphasis */
+            .message-bubble strong {
+                font-weight: 700;
+                color: #111827;
+            }
+            .chat-message.user .message-bubble strong {
+                color: white;
+            }
+            .message-bubble em {
+                font-style: italic;
+                color: #4b5563;
+            }
+            .chat-message.user .message-bubble em {
+                color: rgba(255, 255, 255, 0.9);
+            }
+            
             .streaming-cursor {
                 display: inline-block;
                 width: 3px;
@@ -275,6 +398,8 @@ class AIChatbot {
             .quick-action-btn:hover {
                 border-color: #6366f1;
                 color: #6366f1;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
             }
             @media (max-width: 768px) {
                 .ai-chatbot-overlay {
@@ -282,6 +407,14 @@ class AIChatbot {
                     right: 1rem !important;
                     left: 1rem !important;
                     width: auto !important;
+                }
+                .message-bubble {
+                    max-width: 90%;
+                    font-size: 0.9rem;
+                }
+                .code-block-wrapper pre {
+                    font-size: 0.8rem;
+                    padding: 1rem;
                 }
             }
         `;
@@ -431,7 +564,7 @@ class AIChatbot {
     }
 
     async streamFromAPI(userMessage) {
-        let systemPrompt = `You are an expert DSA tutor. Provide clear, concise explanations with examples.`;
+        let systemPrompt = `You are an expert DSA tutor. Provide clear, concise explanations with examples. Use markdown formatting for better readability.`;
         
         if (this.currentQuestion) {
             systemPrompt += `\nContext: User is viewing "${this.currentQuestion.title}" (${this.currentQuestion.difficulty}, ${this.currentQuestion.topic})`;
@@ -542,12 +675,73 @@ class AIChatbot {
     }
 
     formatMessage(content) {
-        return content
-            .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
-            .replace(/`([^`]+)`/g, '<code>$1</code>')
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            .replace(/\n/g, '<br>');
+        // Handle code blocks with language support
+        content = content.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+            const language = lang || 'code';
+            const escapedCode = this.escapeHtml(code.trim()).replace(/'/g, '\\\'');
+            return `<div class="code-block-wrapper">
+                <div class="code-block-header">
+                    <span class="code-language">${language}</span>
+                    <button class="copy-code-btn" onclick="
+                        const code = \`${escapedCode}\`;
+                        navigator.clipboard.writeText(code).then(() => {
+                            this.innerHTML = '<svg width=\\'14\\' height=\\'14\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\'><polyline points=\\'20 6 9 17 4 12\\'></polyline></svg> Copied!';
+                            setTimeout(() => {
+                                this.innerHTML = '<svg width=\\'14\\' height=\\'14\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\'><rect x=\\'9\\' y=\\'9\\' width=\\'13\\' height=\\'13\\' rx=\\'2\\' ry=\\'2\\'></rect><path d=\\'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1\\'></path></svg> Copy';
+                            }, 2000);
+                        });
+                    ">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        Copy
+                    </button>
+                </div>
+                <pre><code class="language-${language}">${this.escapeHtml(code.trim())}</code></pre>
+            </div>`;
+        });
+
+        // Handle inline code
+        content = content.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+
+        // Handle bold text
+        content = content.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+        // Handle italic text
+        content = content.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+        // Handle headers
+        content = content.replace(/^### (.+)$/gm, '<h3 class="msg-h3">$1</h3>');
+        content = content.replace(/^## (.+)$/gm, '<h2 class="msg-h2">$1</h2>');
+        content = content.replace(/^# (.+)$/gm, '<h1 class="msg-h1">$1</h1>');
+
+        // Handle bullet lists
+        content = content.replace(/^- (.+)$/gm, '<li class="msg-li">$1</li>');
+        content = content.replace(/(<li class="msg-li">[\s\S]*?<\/li>)/g, '<ul class="msg-ul">$1</ul>');
+
+        // Handle numbered lists
+        content = content.replace(/^\d+\. (.+)$/gm, '<li class="msg-li-num">$1</li>');
+        content = content.replace(/(<li class="msg-li-num">[\s\S]*?<\/li>)/g, '<ol class="msg-ol">$1</ol>');
+
+        // Handle links
+        content = content.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" class="msg-link">$1</a>');
+
+        // Handle line breaks
+        content = content.replace(/\n/g, '<br>');
+
+        return content;
+    }
+
+    escapeHtml(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, m => map[m]);
     }
 }
 
