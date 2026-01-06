@@ -7,20 +7,384 @@
     <link rel="stylesheet" href="./css/reset.css">
     <link rel="stylesheet" href="./css/styles.css">
     <link rel="stylesheet" href="./css/header.css">
-    <link rel="stylesheet" href="./css/topics.css">
+    <style>
+        /* Modern Topics Page Styles */
+        body {
+            padding-top: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .topics-page {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .topics-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .topics-header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            letter-spacing: -0.5px;
+        }
+
+        .topics-header p {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 500;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .loading-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            gap: 2rem;
+        }
+
+        .spinner-large {
+            width: 80px;
+            height: 80px;
+            border: 6px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-indicator p {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 2rem;
+        }
+
+        .topic-card-item {
+            background: white;
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.5s ease-out backwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .topic-card-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--topic-color, #6366f1), #a855f7);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .topic-card-item:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        }
+
+        .topic-card-item:hover::before {
+            transform: scaleX(1);
+        }
+
+        .topic-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .topic-card-item:hover .topic-icon {
+            transform: scale(1.15) rotate(-5deg);
+        }
+
+        .topic-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1f2937;
+            margin: 0 0 0.75rem 0;
+            line-height: 1.3;
+        }
+
+        .topic-description {
+            font-size: 0.95rem;
+            color: #6b7280;
+            margin: 0 0 0.5rem 0;
+            line-height: 1.6;
+        }
+
+        .topic-count {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #6366f1;
+            margin: 0 0 1.5rem 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .topic-count::before {
+            content: '📋';
+            font-size: 1rem;
+        }
+
+        .topic-progress-section {
+            margin-top: auto;
+            padding-top: 1.5rem;
+            border-top: 2px solid #f3f4f6;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.875rem;
+        }
+
+        .progress-label span:first-child {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .progress-percentage {
+            font-size: 1.25rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .progress-bar-wrapper {
+            width: 100%;
+            height: 14px;
+            background: #e5e7eb;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar-inner {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+        }
+
+        .progress-bar-inner::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.5) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .solved-count {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .status-badge {
+            padding: 0.375rem 0.875rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        footer {
+            margin-top: 4rem;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Stagger animation */
+        .topic-card-item:nth-child(1) { animation-delay: 0.05s; }
+        .topic-card-item:nth-child(2) { animation-delay: 0.1s; }
+        .topic-card-item:nth-child(3) { animation-delay: 0.15s; }
+        .topic-card-item:nth-child(4) { animation-delay: 0.2s; }
+        .topic-card-item:nth-child(5) { animation-delay: 0.25s; }
+        .topic-card-item:nth-child(6) { animation-delay: 0.3s; }
+        .topic-card-item:nth-child(7) { animation-delay: 0.35s; }
+        .topic-card-item:nth-child(8) { animation-delay: 0.4s; }
+        .topic-card-item:nth-child(9) { animation-delay: 0.45s; }
+        .topic-card-item:nth-child(10) { animation-delay: 0.5s; }
+        .topic-card-item:nth-child(11) { animation-delay: 0.55s; }
+        .topic-card-item:nth-child(12) { animation-delay: 0.6s; }
+        .topic-card-item:nth-child(13) { animation-delay: 0.65s; }
+        .topic-card-item:nth-child(14) { animation-delay: 0.7s; }
+        .topic-card-item:nth-child(15) { animation-delay: 0.75s; }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .topics-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 1.75rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 70px;
+            }
+
+            .topics-page {
+                padding: 2rem 1.5rem;
+            }
+
+            .topics-header {
+                margin-bottom: 3rem;
+            }
+
+            .topics-header h1 {
+                font-size: 2.25rem;
+            }
+
+            .topics-header p {
+                font-size: 1.125rem;
+            }
+
+            .topics-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .topic-card-item {
+                padding: 1.75rem;
+            }
+
+            .topic-icon {
+                width: 64px;
+                height: 64px;
+                font-size: 2rem;
+            }
+
+            .topic-name {
+                font-size: 1.375rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .topics-header h1 {
+                font-size: 1.875rem;
+            }
+
+            .topics-header p {
+                font-size: 1rem;
+            }
+
+            .topic-card-item {
+                padding: 1.5rem;
+                border-radius: 20px;
+            }
+
+            .topic-icon {
+                width: 56px;
+                height: 56px;
+                font-size: 1.75rem;
+            }
+
+            .topic-name {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <header></header>
 
     <main class="topics-page">
-        <!-- ✅ Added spacing wrapper -->
-        <div style="margin-top: 6rem;">
-            <div class="topics-header">
-
-                <h1>Must Do Problems to Crack Interview</h1>
-
-                <p>Choose a topic to start practicing • 447 Total Questions</p>
-            </div>
+        <div class="topics-header">
+            <h1>🎯 Master DSA Topics</h1>
+            <p>Choose a topic to start practicing • 447 Total Questions</p>
         </div>
 
         <div id="loading" class="loading-indicator">
@@ -32,7 +396,7 @@
     </main>
 
     <footer>
-        <p>&copy; 2025 DSA Tracker. Built for interview preparation.</p>
+        <p>&copy; 2025 DSA Tracker. Built with 💜 for interview preparation.</p>
     </footer>
 
     <script type="module" src="./js/header.js"></script>
@@ -47,19 +411,19 @@
                 count: 36, 
                 icon: "📊", 
                 color: "#8b5cf6",
-                description: "Arrays, sorting, searching"
+                description: "Arrays, sorting, and searching techniques"
             },
             "Matrix": { 
                 count: 10, 
                 icon: "🔢", 
                 color: "#ec4899",
-                description: "2D arrays and matrices"
+                description: "2D arrays and matrix manipulations"
             },
             "String": { 
                 count: 43, 
                 icon: "📝", 
                 color: "#06b6d4",
-                description: "String manipulation"
+                description: "String operations and patterns"
             },
             "Searching & Sorting": { 
                 count: 36, 
@@ -71,7 +435,7 @@
                 count: 36, 
                 icon: "🔗", 
                 color: "#f59e0b",
-                description: "Linked list operations"
+                description: "Linked list operations and tricks"
             },
             "Binary Trees": { 
                 count: 35, 
@@ -83,55 +447,55 @@
                 count: 22, 
                 icon: "🌳", 
                 color: "#ec4899",
-                description: "BST operations"
+                description: "BST operations and balancing"
             },
             "Greedy": { 
                 count: 35, 
                 icon: "💰", 
                 color: "#06b6d4",
-                description: "Greedy algorithms"
+                description: "Greedy algorithm strategies"
             },
             "BackTracking": { 
                 count: 19, 
                 icon: "🔙", 
                 color: "#10b981",
-                description: "Backtracking problems"
+                description: "Backtracking and recursion"
             },
             "Stacks and Queues": { 
                 count: 38, 
                 icon: "📚", 
                 color: "#f59e0b",
-                description: "Stack and queue operations"
+                description: "Stack and queue applications"
             },
             "Heap": { 
                 count: 18, 
                 icon: "⛰️", 
                 color: "#8b5cf6",
-                description: "Heap data structure"
+                description: "Priority queues and heaps"
             },
             "Graph": { 
                 count: 44, 
                 icon: "🕸️", 
                 color: "#ec4899",
-                description: "Graph algorithms"
+                description: "Graph algorithms and traversals"
             },
             "Trie": { 
                 count: 6, 
                 icon: "🔤", 
                 color: "#06b6d4",
-                description: "Trie data structure"
+                description: "Trie data structure problems"
             },
             "Dynamic Programming": { 
                 count: 60, 
                 icon: "⚡", 
                 color: "#10b981",
-                description: "DP problems"
+                description: "DP optimization techniques"
             },
             "Bit Manipulation": { 
                 count: 10, 
                 icon: "🔢", 
                 color: "#f59e0b",
-                description: "Bitwise operations"
+                description: "Bitwise operations and tricks"
             }
         };
 
@@ -157,11 +521,11 @@
         let currentUser = null;
 
         async function init() {
-            console.log('Topics page initializing...');
+            console.log('🚀 Topics page initializing...');
             
             onAuthStateChanged(auth, async (user) => {
                 currentUser = user;
-                console.log('Auth state:', user ? 'logged in' : 'guest');
+                console.log('👤 Auth state:', user ? `Logged in as ${user.email}` : 'Guest mode');
                 
                 await loadProgress();
                 renderTopics();
@@ -179,22 +543,22 @@
                     
                     if (docSnap.exists()) {
                         solvedQuestions = new Set(docSnap.data().solved || []);
-                        console.log('Loaded from Firebase:', solvedQuestions.size);
+                        console.log('✅ Loaded from Firebase:', solvedQuestions.size, 'questions');
                     }
                 }
                 
                 const saved = localStorage.getItem('solvedQuestions');
                 if (saved && solvedQuestions.size === 0) {
                     solvedQuestions = new Set(JSON.parse(saved));
-                    console.log('Loaded from localStorage:', solvedQuestions.size);
+                    console.log('💾 Loaded from localStorage:', solvedQuestions.size, 'questions');
                 }
             } catch (error) {
-                console.error('Error loading progress:', error);
+                console.error('❌ Error loading progress:', error);
             }
         }
 
         function renderTopics() {
-            console.log('Rendering topics...');
+            console.log('🎨 Rendering topics...');
             const grid = document.getElementById('topics-grid');
             grid.innerHTML = '';
 
@@ -208,24 +572,33 @@
                 
                 const percentage = totalCount > 0 ? Math.round((solvedCount / totalCount) * 100) : 0;
                 
-                let status = 'not started';
-                let statusColor = '#fef3c7';
-                let statusTextColor = '#92400e';
+                let status, statusColor, statusTextColor;
                 
                 if (percentage === 100) {
-                    status = 'completed';
+                    status = '✓ Completed';
                     statusColor = '#d1fae5';
                     statusTextColor = '#065f46';
                 } else if (percentage > 0) {
-                    status = 'in progress';
+                    status = '⚡ In Progress';
                     statusColor = '#dbeafe';
                     statusTextColor = '#1e40af';
+                } else {
+                    status = '○ Not Started';
+                    statusColor = '#fef3c7';
+                    statusTextColor = '#92400e';
                 }
+                
+                const progressGradient = percentage === 100 
+                    ? 'linear-gradient(90deg, #10b981, #34d399)'
+                    : percentage > 0 
+                    ? 'linear-gradient(90deg, #6366f1, #a855f7)'
+                    : '#e5e7eb';
                 
                 const card = document.createElement('div');
                 card.className = 'topic-card-item';
+                card.style.setProperty('--topic-color', meta.color);
                 card.onclick = () => {
-                    console.log('Navigating to:', topic);
+                    console.log('📂 Navigating to:', topic);
                     window.location.href = `topic.html?name=${encodeURIComponent(topic)}`;
                 };
                 
@@ -243,10 +616,10 @@
                             <span class="progress-percentage">${percentage}%</span>
                         </div>
                         <div class="progress-bar-wrapper">
-                            <div class="progress-bar-inner" style="width: ${percentage}%; background: ${percentage === 100 ? '#10b981' : percentage > 0 ? 'linear-gradient(90deg, #4f46e5, #06b6d4)' : '#e5e7eb'}"></div>
+                            <div class="progress-bar-inner" style="width: ${percentage}%; background: ${progressGradient}"></div>
                         </div>
                         <div class="progress-stats">
-                            <span class="solved-count">${solvedCount}/${totalCount}</span>
+                            <span class="solved-count">${solvedCount}/${totalCount} solved</span>
                             <span class="status-badge" style="background: ${statusColor}; color: ${statusTextColor}">${status}</span>
                         </div>
                     </div>
@@ -255,10 +628,13 @@
                 grid.appendChild(card);
             });
             
-            console.log('Topics rendered:', Object.keys(TOPICS_META).length);
+            console.log('✨ Rendered', Object.keys(TOPICS_META).length, 'topics');
         }
 
         init();
     </script>
+    
+    <!-- AI Chatbot Integration -->
+    <script src="./js/ai-chatbot.js"></script>
 </body>
 </html>

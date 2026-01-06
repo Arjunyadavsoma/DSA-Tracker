@@ -2,7 +2,6 @@ import { auth } from './firebase-config.js';
 import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
 
-
 // ============================================
 // HEADER CLASS
 // ============================================
@@ -21,10 +20,8 @@ class Header {
         if (path.includes('topic.html')) return 'topic';
         if (path.includes('questions.html')) return 'questions';
         if (path.includes('random.html')) return 'random';
-
         if (path.includes('dashboard.html')) return 'dashboard';
         if (path.includes('login.html')) return 'login';
-
         if (path.includes('signup.html')) return 'signup';
         return 'home';
     }
@@ -32,7 +29,6 @@ class Header {
     init() {
         this.renderHeader();
         this.setupAuthListener();
-        
     }
 
     renderHeader() {
@@ -53,6 +49,14 @@ class Header {
                     
                     <!-- Desktop Navigation -->
                     <div class="nav-center">
+                        <a href="random.html" class="nav-link ${this.currentPage === 'random' ? 'active' : ''}">
+                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                                <circle cx="9" cy="5" r="2" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M9 7V11M7 11H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                <rect x="3" y="13" width="12" height="3" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                            Question of Day
+                        </a>
                         <a href="topics.html" class="nav-link ${this.currentPage === 'topics' || this.currentPage === 'topic' ? 'active' : ''}">
                             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                                 <rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.5"/>
@@ -68,14 +72,6 @@ class Header {
                             </svg>
                             All Questions
                         </a>
-                        <a href="random.html" class="nav-link ${this.currentPage === 'random' ? 'active' : ''}">
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <path d="M2 8H8M10 8H16M8 2V8M8 10V16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5"/>
-    </svg>
-    Random
-</a>
-
                         <a href="dashboard.html" class="nav-link ${this.currentPage === 'dashboard' ? 'active' : ''}">
                             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                                 <rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.5"/>
@@ -88,7 +84,6 @@ class Header {
                     
                     <!-- Right Section -->
                     <div class="nav-right">
-                       
                         <div id="user-section" class="user-section" style="display: none;">
                             <div class="user-avatar">
                                 <span id="user-initial">U</span>
@@ -112,10 +107,9 @@ class Header {
                 
                 <!-- Mobile Menu -->
                 <div class="mobile-menu" id="mobile-menu">
+                    <a href="random.html" class="mobile-link ${this.currentPage === 'random' ? 'active' : ''}">Question of Day</a>
                     <a href="topics.html" class="mobile-link ${this.currentPage === 'topics' || this.currentPage === 'topic' ? 'active' : ''}">Topics</a>
                     <a href="questions.html" class="mobile-link ${this.currentPage === 'questions' ? 'active' : ''}">All Questions</a>
-                    <a href="random.html" class="mobile-link ${this.currentPage === 'random' ? 'active' : ''}">Random</a>
-
                     <a href="dashboard.html" class="mobile-link ${this.currentPage === 'dashboard' ? 'active' : ''}">Dashboard</a>
                     <div id="mobile-auth" class="mobile-auth"></div>
                 </div>
@@ -137,7 +131,7 @@ class Header {
         const brandLink = document.getElementById('nav-brand');
         if (brandLink) {
             if (user) {
-                brandLink.href = 'topics.html';
+                brandLink.href = 'random.html';  // ← Changed to random.html (QOTD)
             } else {
                 brandLink.href = 'index.html';
             }
@@ -193,9 +187,6 @@ class Header {
             alert('Error signing out');
         }
     }
-
-    
-    
 
     setupMobileMenu() {
         const toggle = document.getElementById('mobile-toggle');
