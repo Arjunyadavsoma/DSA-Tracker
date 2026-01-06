@@ -1,143 +1,20 @@
-// AI Chatbot with Streaming - Complete Version
+// AI Chatbot - Uses Server-Side API Route
 class AIChatbot {
     constructor() {
         this.isOpen = false;
         this.messages = [];
         this.currentQuestion = null;
-        this.apiKey = null;
         this.isStreaming = false;
         this.init();
     }
 
     init() {
         console.log('🤖 Initializing AI Chatbot...');
-        
-        // Inject UI first
         this.injectStyles();
         this.injectHTML();
         this.attachEventListeners();
-        
-        // Then load async data
-        this.loadAPIKey();
         this.capturePageContext();
-        
         console.log('✅ Chatbot UI ready');
-    }
-
-    loadAPIKey() {
-        // Browser can't access Vercel env vars directly
-        this.apiKey = localStorage.getItem('groq_api_key');
-        
-        if (!this.apiKey) {
-            console.warn('⚠️ No API key found');
-            setTimeout(() => this.showAPIKeyPrompt(), 2000);
-        } else {
-            console.log('✅ API key loaded from localStorage');
-        }
-    }
-
-    showAPIKeyPrompt() {
-        if (document.getElementById('api-key-overlay')) return;
-
-        const promptHTML = `
-            <div id="api-key-overlay" style="
-                position: fixed;
-                inset: 0;
-                background: rgba(0,0,0,0.7);
-                z-index: 999999;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            ">
-                <div id="api-key-prompt" style="
-                    background: white;
-                    padding: 2rem;
-                    border-radius: 16px;
-                    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-                    max-width: 400px;
-                    width: 90%;
-                ">
-                    <h3 style="margin: 0 0 1rem 0; color: #1f2937;">🔑 Setup AI Assistant</h3>
-                    <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 1rem;">
-                        Get your free Groq API key to enable AI chat.
-                    </p>
-                    <ol style="color: #6b7280; font-size: 0.85rem; margin: 1rem 0; padding-left: 1.5rem; line-height: 1.6;">
-                        <li>Visit <a href="https://console.groq.com/keys" target="_blank" style="color: #6366f1; text-decoration: underline;">console.groq.com/keys</a></li>
-                        <li>Sign up (free, no credit card)</li>
-                        <li>Create new API key</li>
-                        <li>Copy and paste below</li>
-                    </ol>
-                    <input 
-                        type="password" 
-                        id="api-key-input" 
-                        placeholder="gsk_..."
-                        style="
-                            width: 100%;
-                            padding: 0.75rem;
-                            border: 2px solid #e5e7eb;
-                            border-radius: 8px;
-                            font-size: 0.9rem;
-                            margin-bottom: 1rem;
-                            box-sizing: border-box;
-                            font-family: monospace;
-                        "
-                    />
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button id="save-api-key" style="
-                            flex: 1;
-                            padding: 0.75rem;
-                            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-                            color: white;
-                            border: none;
-                            border-radius: 8px;
-                            font-weight: 600;
-                            cursor: pointer;
-                        ">Save Key</button>
-                        <button id="cancel-api-key" style="
-                            padding: 0.75rem 1rem;
-                            background: #f3f4f6;
-                            color: #6b7280;
-                            border: none;
-                            border-radius: 8px;
-                            font-weight: 600;
-                            cursor: pointer;
-                        ">Cancel</button>
-                    </div>
-                    <p style="color: #9ca3af; font-size: 0.75rem; margin-top: 1rem; text-align: center;">
-                        Your key is stored locally in your browser only.
-                    </p>
-                </div>
-            </div>
-        `;
-
-        document.body.insertAdjacentHTML('beforeend', promptHTML);
-
-        const input = document.getElementById('api-key-input');
-        const saveBtn = document.getElementById('save-api-key');
-        const cancelBtn = document.getElementById('cancel-api-key');
-
-        saveBtn.addEventListener('click', () => {
-            const key = input.value.trim();
-            if (key && key.startsWith('gsk_')) {
-                localStorage.setItem('groq_api_key', key);
-                this.apiKey = key;
-                document.getElementById('api-key-overlay').remove();
-                
-                // Show success message in chat
-                const welcome = document.querySelector('.welcome-message');
-                if (welcome) welcome.remove();
-                this.addMessage('✅ API key saved! Ask me anything about DSA.', 'ai');
-            } else {
-                alert('⚠️ Please enter a valid Groq API key (starts with gsk_)');
-            }
-        });
-
-        cancelBtn.addEventListener('click', () => {
-            document.getElementById('api-key-overlay').remove();
-        });
-
-        // Focus input
-        setTimeout(() => input.focus(), 100);
     }
 
     capturePageContext() {
@@ -255,9 +132,6 @@ class AIChatbot {
                 background: #cbd5e1;
                 border-radius: 3px;
             }
-            .ai-chatbot-messages::-webkit-scrollbar-thumb:hover {
-                background: #94a3b8;
-            }
             .chat-message {
                 margin-bottom: 1rem;
                 animation: messageSlide 0.3s ease-out;
@@ -314,14 +188,6 @@ class AIChatbot {
                 padding: 0;
                 color: #e5e7eb;
             }
-            .message-bubble strong {
-                font-weight: 700;
-            }
-            .message-bubble em {
-                font-style: italic;
-            }
-            
-            /* Streaming Cursor */
             .streaming-cursor {
                 display: inline-block;
                 width: 3px;
@@ -335,7 +201,6 @@ class AIChatbot {
                 0%, 50% { opacity: 1; }
                 51%, 100% { opacity: 0; }
             }
-            
             .ai-chatbot-input-container {
                 padding: 1.25rem;
                 background: white;
@@ -373,7 +238,6 @@ class AIChatbot {
             }
             .ai-chatbot-send:hover:not(:disabled) {
                 transform: scale(1.05);
-                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
             }
             .ai-chatbot-send:disabled {
                 opacity: 0.5;
@@ -393,10 +257,6 @@ class AIChatbot {
                 font-weight: 700;
                 color: #1f2937;
                 margin-bottom: 0.5rem;
-            }
-            .welcome-message p {
-                color: #6b7280;
-                font-size: 0.9rem;
             }
             .quick-actions {
                 display: grid;
@@ -418,8 +278,6 @@ class AIChatbot {
             .quick-action-btn:hover {
                 border-color: #6366f1;
                 color: #6366f1;
-                background: #f0f0ff;
-                transform: translateY(-1px);
             }
             @media (max-width: 768px) {
                 .ai-chatbot-overlay {
@@ -427,11 +285,6 @@ class AIChatbot {
                     right: 1rem !important;
                     left: 1rem !important;
                     width: auto !important;
-                    height: 500px !important;
-                }
-                .ai-chatbot-fab {
-                    bottom: 1.5rem;
-                    right: 1.5rem;
                 }
             }
         `;
@@ -460,7 +313,7 @@ class AIChatbot {
                 <div class="ai-chatbot-messages" id="ai-chatbot-messages">
                     <div class="welcome-message">
                         <h4>👋 Hi! I'm your DSA AI Tutor</h4>
-                        <p>Ask me anything about DSA problems!</p>
+                        <p style="color: #6b7280; font-size: 0.9rem;">Ask me anything about DSA!</p>
                         <div class="quick-actions">
                             <button class="quick-action-btn" data-prompt="explain">💡 Explain this problem</button>
                             <button class="quick-action-btn" data-prompt="hints">🧩 Give me hints</button>
@@ -485,58 +338,36 @@ class AIChatbot {
             </div>
         `;
         document.body.appendChild(container);
-        console.log('✅ HTML injected');
     }
 
     attachEventListeners() {
-        const fab = document.getElementById('ai-chatbot-fab');
-        const closeBtn = document.getElementById('ai-chatbot-close');
-        const sendBtn = document.getElementById('ai-chatbot-send');
+        document.getElementById('ai-chatbot-fab')?.addEventListener('click', () => this.toggleChat());
+        document.getElementById('ai-chatbot-close')?.addEventListener('click', () => this.closeChat());
+        document.getElementById('ai-chatbot-send')?.addEventListener('click', () => this.sendMessage());
+        
         const input = document.getElementById('ai-chatbot-input');
+        input?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                this.sendMessage();
+            }
+        });
         
-        if (fab) {
-            fab.addEventListener('click', () => {
-                console.log('FAB clicked');
-                this.toggleChat();
-            });
-        }
-        
-        if (closeBtn) {
-            closeBtn.addEventListener('click', () => this.closeChat());
-        }
-        
-        if (sendBtn) {
-            sendBtn.addEventListener('click', () => this.sendMessage());
-        }
-        
-        if (input) {
-            input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    this.sendMessage();
-                }
-            });
-            
-            input.addEventListener('input', function() {
-                this.style.height = 'auto';
-                this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-            });
-        }
+        input?.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
         
         document.getElementById('ai-chatbot-messages')?.addEventListener('click', (e) => {
             if (e.target.classList.contains('quick-action-btn')) {
                 this.handleQuickAction(e.target.dataset.prompt);
             }
         });
-        
-        console.log('✅ Event listeners attached');
     }
 
     toggleChat() {
         this.isOpen = !this.isOpen;
         const overlay = document.getElementById('ai-chatbot-overlay');
-        
-        console.log('Toggling chat. isOpen:', this.isOpen);
         
         if (this.isOpen) {
             overlay.style.display = 'flex';
@@ -546,9 +377,7 @@ class AIChatbot {
             }, 10);
         } else {
             overlay.classList.remove('open');
-            setTimeout(() => {
-                overlay.style.display = 'none';
-            }, 300);
+            setTimeout(() => overlay.style.display = 'none', 300);
         }
     }
 
@@ -556,39 +385,29 @@ class AIChatbot {
         this.isOpen = false;
         const overlay = document.getElementById('ai-chatbot-overlay');
         overlay.classList.remove('open');
-        setTimeout(() => {
-            overlay.style.display = 'none';
-        }, 300);
+        setTimeout(() => overlay.style.display = 'none', 300);
     }
 
     handleQuickAction(type) {
         const prompts = {
             'explain': this.currentQuestion 
-                ? `Explain the approach to solve "${this.currentQuestion.title}" (${this.currentQuestion.difficulty} - ${this.currentQuestion.topic}). Give a clear step-by-step explanation.`
-                : 'How do I approach DSA problems systematically?',
+                ? `Explain "${this.currentQuestion.title}" step-by-step.`
+                : 'How to approach DSA problems?',
             'hints': this.currentQuestion
-                ? `Give me 3-4 progressive hints for "${this.currentQuestion.title}" without spoiling the solution. Start with the pattern, then approach, then edge cases.`
-                : 'What are the most common DSA patterns I should know?',
+                ? `Give hints for "${this.currentQuestion.title}" without spoiling.`
+                : 'Common DSA patterns?',
             'pattern': this.currentQuestion
-                ? `What algorithmic pattern does "${this.currentQuestion.title}" use? Explain why this pattern fits and how to recognize it.`
-                : 'Explain the most important DSA patterns with examples.',
+                ? `What pattern for "${this.currentQuestion.title}"?`
+                : 'Explain DSA patterns',
             'complexity': this.currentQuestion
-                ? `Explain the time and space complexity for different approaches to solve "${this.currentQuestion.title}". Compare brute force vs optimal.`
-                : 'Explain Big O notation with examples.'
+                ? `Time complexity for "${this.currentQuestion.title}"?`
+                : 'Explain Big O'
         };
         this.sendMessage(prompts[type]);
     }
 
     async sendMessage(customPrompt = null) {
-        if (!this.apiKey) {
-            this.showAPIKeyPrompt();
-            return;
-        }
-
-        if (this.isStreaming) {
-            console.log('⏳ Already streaming...');
-            return;
-        }
+        if (this.isStreaming) return;
 
         const input = document.getElementById('ai-chatbot-input');
         const sendBtn = document.getElementById('ai-chatbot-send');
@@ -596,8 +415,6 @@ class AIChatbot {
         
         if (!message) return;
 
-        console.log('📤 Sending message:', message);
-        
         input.value = '';
         input.style.height = 'auto';
         sendBtn.disabled = true;
@@ -606,7 +423,7 @@ class AIChatbot {
         this.addMessage(message, 'user');
 
         try {
-            await this.streamGroqAPI(message);
+            await this.streamFromAPI(message);
         } catch (error) {
             console.error('❌ Error:', error);
             this.addMessage(`❌ Error: ${error.message}`, 'ai');
@@ -616,11 +433,11 @@ class AIChatbot {
         }
     }
 
-    async streamGroqAPI(userMessage) {
-        let systemPrompt = `You are an expert DSA (Data Structures and Algorithms) tutor. Provide clear, well-structured explanations with examples. Use markdown formatting for code blocks. Be concise but thorough.`;
+    async streamFromAPI(userMessage) {
+        let systemPrompt = `You are an expert DSA tutor. Provide clear explanations with examples.`;
         
         if (this.currentQuestion) {
-            systemPrompt += `\n\nContext: The user is currently viewing the problem "${this.currentQuestion.title}" which is a ${this.currentQuestion.difficulty} level problem in the ${this.currentQuestion.topic} category.`;
+            systemPrompt += `\nContext: "${this.currentQuestion.title}" (${this.currentQuestion.difficulty})`;
         }
 
         const messages = [
@@ -632,17 +449,15 @@ class AIChatbot {
             { role: 'user', content: userMessage }
         ];
 
-        console.log('🔄 Streaming from Groq API...');
-
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        // Call YOUR API route, not Groq directly
+        const response = await fetch('/api/chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.apiKey}`
             },
             body: JSON.stringify({
-                model: 'llama-3.3-70b-versatile',
                 messages,
+                model: 'llama-3.3-70b-versatile',
                 temperature: 0.7,
                 max_tokens: 2048,
                 stream: true
@@ -650,9 +465,7 @@ class AIChatbot {
         });
 
         if (!response.ok) {
-            const errorText = await response.text();
-            console.error('API Error:', errorText);
-            throw new Error(`API Error ${response.status}: ${errorText}`);
+            throw new Error(`Server error ${response.status}`);
         }
 
         await this.handleStream(response);
@@ -680,10 +493,7 @@ class AIChatbot {
         try {
             while (true) {
                 const { done, value } = await reader.read();
-                if (done) {
-                    console.log('✅ Stream completed');
-                    break;
-                }
+                if (done) break;
 
                 buffer += decoder.decode(value, { stream: true });
                 const lines = buffer.split('\n');
@@ -703,19 +513,15 @@ class AIChatbot {
                                     '<span class="streaming-cursor"></span>';
                                 container.scrollTop = container.scrollHeight;
                             }
-                        } catch (e) {
-                            // Skip JSON parsing errors
-                        }
+                        } catch (e) {}
                     }
                 }
             }
 
             bubble.querySelector('.streaming-cursor')?.remove();
             this.messages.push({ role: 'assistant', content: accumulatedText });
-            console.log('✅ Message saved to history');
 
         } catch (error) {
-            console.error('Stream error:', error);
             bubble.querySelector('.streaming-cursor')?.remove();
             throw error;
         }
@@ -748,11 +554,7 @@ class AIChatbot {
 
 // Initialize
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        console.log('DOM loaded, initializing chatbot...');
-        new AIChatbot();
-    });
+    document.addEventListener('DOMContentLoaded', () => new AIChatbot());
 } else {
-    console.log('DOM ready, initializing chatbot...');
     new AIChatbot();
 }
