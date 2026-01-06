@@ -651,13 +651,13 @@ class AIChatbot {
 
         // Question-specific prompts - more direct
         const prompts = {
-            'explain': `Explain how to solve "${this.currentQuestion.title}" step-by-step. Include the optimal approach and key insights.`,
+            'explain': `Explain how to solve Question step-by-step. Include the optimal approach and key insights.`,
             
-            'hints': `Give me hints for "${this.currentQuestion.title}". Provide 3-4 progressive hints without spoiling the solution.`,
+            'hints': `Give me hints for Question. Provide 3-4 progressive hints without spoiling the solution.`,
             
-            'pattern': `What pattern does "${this.currentQuestion.title}" use? Mention the technique and similar problems.`,
+            'pattern': `What pattern does Question use? Mention the technique and similar problems.`,
             
-            'complexity': `What is the time and space complexity for "${this.currentQuestion.title}"? Explain the optimal solution's complexity.`
+            'complexity': `What is the time and space complexity for Question? Explain the optimal solution's complexity.`
         };
         
         this.sendMessage(prompts[type]);
