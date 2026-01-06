@@ -1,4 +1,4 @@
-// AI Chatbot - Complete with Context Awareness and Modern Formatting
+// AI Chatbot - Complete with Enhanced Context Awareness for All Pages
 class AIChatbot {
     constructor() {
         this.isOpen = false;
@@ -19,34 +19,105 @@ class AIChatbot {
 
     capturePageContext() {
         setTimeout(() => {
-            // Try multiple selectors to capture question details
-            const questionTitle = document.getElementById('question-title')?.textContent || 
-                                document.querySelector('h1')?.textContent ||
-                                document.querySelector('.question-title')?.textContent;
-            
-            const difficulty = document.getElementById('difficulty-badge')?.textContent ||
-                             document.querySelector('.difficulty')?.textContent;
-            
-            const topic = document.getElementById('topic-badge')?.textContent ||
-                         document.querySelector('.topic')?.textContent;
-            
-            const description = document.getElementById('question-description')?.textContent ||
-                              document.querySelector('.question-description')?.textContent ||
-                              document.querySelector('.problem-statement')?.textContent;
+            // Try multiple selectors for different page types
+            let questionTitle = null;
+            let difficulty = null;
+            let topic = null;
+            let description = null;
 
-            if (questionTitle) {
+            // Strategy 1: Question detail page selectors
+            questionTitle = document.getElementById('question-title')?.textContent ||
+                           document.querySelector('.question-title')?.textContent ||
+                           document.querySelector('h1.problem-title')?.textContent;
+            
+            difficulty = document.getElementById('difficulty-badge')?.textContent ||
+                        document.querySelector('.difficulty')?.textContent ||
+                        document.querySelector('.difficulty-badge')?.textContent;
+            
+            topic = document.getElementById('topic-badge')?.textContent ||
+                   document.querySelector('.topic')?.textContent ||
+                   document.querySelector('.topic-badge')?.textContent;
+            
+            description = document.getElementById('question-description')?.textContent ||
+                         document.querySelector('.question-description')?.textContent ||
+                         document.querySelector('.problem-statement')?.textContent;
+
+            // Strategy 2: QOTD page - look for daily question card
+            if (!questionTitle) {
+                const qotdCard = document.querySelector('.qotd-card') || 
+                               document.querySelector('.daily-question') ||
+                               document.querySelector('.question-of-the-day');
+                
+                if (qotdCard) {
+                    questionTitle = qotdCard.querySelector('h2')?.textContent ||
+                                  qotdCard.querySelector('h3')?.textContent ||
+                                  qotdCard.querySelector('.question-title')?.textContent;
+                    
+                    difficulty = qotdCard.querySelector('.difficulty')?.textContent ||
+                               qotdCard.querySelector('[class*="difficulty"]')?.textContent;
+                    
+                    topic = qotdCard.querySelector('.topic')?.textContent ||
+                           qotdCard.querySelector('[class*="topic"]')?.textContent;
+                    
+                    description = qotdCard.querySelector('.description')?.textContent ||
+                                qotdCard.querySelector('.problem-statement')?.textContent ||
+                                qotdCard.querySelector('p')?.textContent;
+                }
+            }
+
+            // Strategy 3: Random question page
+            if (!questionTitle) {
+                const randomCard = document.querySelector('.random-question') ||
+                                 document.querySelector('.current-question');
+                
+                if (randomCard) {
+                    questionTitle = randomCard.querySelector('h1, h2, h3')?.textContent;
+                    difficulty = randomCard.querySelector('.difficulty')?.textContent;
+                    topic = randomCard.querySelector('.topic')?.textContent;
+                    description = randomCard.querySelector('.description, p')?.textContent;
+                }
+            }
+
+            // Strategy 4: Questions list page - get first/focused question
+            if (!questionTitle) {
+                const focusedQuestion = document.querySelector('.question-card.active') ||
+                                      document.querySelector('.question-item:first-child');
+                
+                if (focusedQuestion) {
+                    questionTitle = focusedQuestion.querySelector('.question-name')?.textContent ||
+                                  focusedQuestion.querySelector('h3, h4')?.textContent;
+                    difficulty = focusedQuestion.querySelector('.difficulty')?.textContent;
+                    topic = focusedQuestion.querySelector('.topic')?.textContent;
+                }
+            }
+
+            if (questionTitle && questionTitle.trim()) {
                 this.currentQuestion = {
                     title: questionTitle.trim(),
                     difficulty: difficulty?.trim() || 'Unknown',
                     topic: topic?.trim() || 'DSA',
-                    description: description?.trim().substring(0, 500) || null // First 500 chars
+                    description: description?.trim().substring(0, 500) || null
                 };
                 console.log('📍 Context captured:', this.currentQuestion);
             } else {
                 console.log('⚠️ No question context found on this page');
                 this.currentQuestion = null;
             }
-        }, 1000);
+        }, 1500); // Increased timeout for dynamic content
+    }
+
+    refreshContext() {
+        // Re-capture context when chat opens (in case page changed)
+        const questionTitle = document.getElementById('question-title')?.textContent || 
+                            document.querySelector('h1')?.textContent ||
+                            document.querySelector('.question-title')?.textContent ||
+                            document.querySelector('.qotd-card h2')?.textContent ||
+                            document.querySelector('.qotd-card h3')?.textContent;
+        
+        if (questionTitle && questionTitle.trim() !== this.currentQuestion?.title) {
+            console.log('🔄 Refreshing context...');
+            this.capturePageContext();
+        }
     }
 
     injectStyles() {
@@ -531,17 +602,22 @@ class AIChatbot {
         const overlay = document.getElementById('ai-chatbot-overlay');
         
         if (this.isOpen) {
+            // Refresh context in case page changed
+            this.refreshContext();
+            
             overlay.style.display = 'flex';
             
             // Update context indicator
-            const indicator = document.getElementById('context-indicator');
-            if (this.currentQuestion) {
-                indicator.textContent = `📖 ${this.currentQuestion.title}`;
-                indicator.style.display = 'block';
-            } else {
-                indicator.textContent = '';
-                indicator.style.display = 'none';
-            }
+            setTimeout(() => {
+                const indicator = document.getElementById('context-indicator');
+                if (this.currentQuestion) {
+                    indicator.textContent = `📖 ${this.currentQuestion.title}`;
+                    indicator.style.display = 'block';
+                } else {
+                    indicator.textContent = '';
+                    indicator.style.display = 'none';
+                }
+            }, 100);
             
             setTimeout(() => {
                 overlay.classList.add('open');
@@ -573,15 +649,15 @@ class AIChatbot {
             return;
         }
 
-        // Question-specific prompts
+        // Question-specific prompts - more direct
         const prompts = {
-            'explain': `Explain the optimal approach to solve "${this.currentQuestion.title}". Break it down step-by-step and mention the key insights needed.`,
+            'explain': `Explain how to solve "${this.currentQuestion.title}" step-by-step. Include the optimal approach and key insights.`,
             
-            'hints': `Give me 3-4 progressive hints for solving "${this.currentQuestion.title}" without revealing the complete solution. Start with the most general hint and gradually get more specific.`,
+            'hints': `Give me hints for "${this.currentQuestion.title}". Provide 3-4 progressive hints without spoiling the solution.`,
             
-            'pattern': `What algorithmic pattern or technique should I use for "${this.currentQuestion.title}"? Also mention similar problems that use the same pattern.`,
+            'pattern': `What pattern does "${this.currentQuestion.title}" use? Mention the technique and similar problems.`,
             
-            'complexity': `Analyze the time and space complexity for the optimal solution of "${this.currentQuestion.title}". Explain why this is the best we can achieve.`
+            'complexity': `What is the time and space complexity for "${this.currentQuestion.title}"? Explain the optimal solution's complexity.`
         };
         
         this.sendMessage(prompts[type]);
@@ -625,16 +701,23 @@ class AIChatbot {
 - Topic/Category: ${this.currentQuestion.topic}`;
             
             if (this.currentQuestion.description) {
-                systemPrompt += `\n- Description Preview: ${this.currentQuestion.description}`;
+                systemPrompt += `\n- Description: ${this.currentQuestion.description}`;
             }
             
-            systemPrompt += `\n\n**Important Instructions:**
-- When the user asks questions like "explain this", "give hints", "what's the approach", "time complexity", etc., they are referring to the problem: "${this.currentQuestion.title}"
-- Tailor your response specifically to this problem
-- If they ask for hints, give progressive hints without revealing the complete solution
-- If they ask about approach, explain the algorithmic pattern and strategy
-- If they ask about complexity, analyze both time and space complexity for this specific problem
-- If they share code, review it in the context of this problem`;
+            systemPrompt += `\n\n**Critical Instructions:**
+- The user is currently viewing/working on: "${this.currentQuestion.title}"
+- When they click quick action buttons like "💡 Explain this problem", "🧩 Give me hints", "🎯 What pattern?", or "⏱️ Time complexity", they are asking about THIS specific problem: "${this.currentQuestion.title}"
+- DO NOT ask which problem they mean - they mean "${this.currentQuestion.title}"
+- Tailor ALL responses specifically to "${this.currentQuestion.title}"
+- If they say "this problem", "this question", "it", or use quick actions, they mean "${this.currentQuestion.title}"
+- Provide direct, actionable answers about "${this.currentQuestion.title}"
+
+**Response Guidelines:**
+- For hints: Give 3-4 progressive hints without revealing the solution
+- For approach: Explain the optimal algorithmic strategy step-by-step
+- For pattern: Identify the pattern and mention 2-3 similar problems
+- For complexity: Analyze time and space complexity with explanation
+- For code review: Review in context of "${this.currentQuestion.title}"`;
         } else {
             systemPrompt += `\n\nNote: User is not currently viewing a specific problem. Provide general DSA guidance unless they mention a specific problem.`;
         }
