@@ -1,4 +1,4 @@
-// AI Chatbot with Streaming - Environment Variable Version
+// AI Chatbot - Fixed Version
 class AIChatbot {
     constructor() {
         this.isOpen = false;
@@ -9,40 +9,35 @@ class AIChatbot {
         this.init();
     }
 
-    async loadAPIKey() {
-        // Try to get from environment variable (Vercel/build-time)
-        this.apiKey = import.meta.env?.VITE_GROQ_API_KEY || 
-                      process.env?.GROQ_API_KEY || 
-                      window.ENV?.GROQ_API_KEY;
+    init() {
+        console.log('🤖 Initializing AI Chatbot...');
         
-        // Fallback to localStorage (for development)
+        // Inject UI first
+        this.injectStyles();
+        this.injectHTML();
+        this.attachEventListeners();
+        
+        // Then load async data
+        this.loadAPIKey();
+        this.capturePageContext();
+        
+        console.log('✅ Chatbot UI ready');
+    }
+
+    loadAPIKey() {
+        // Try environment first
+        this.apiKey = window.ENV?.GROQ_API_KEY;
+        
+        // Fallback to localStorage
         if (!this.apiKey) {
             this.apiKey = localStorage.getItem('groq_api_key');
         }
         
         if (!this.apiKey) {
-            console.warn('⚠️ No API key found. Chatbot will be disabled.');
-            this.disableChatbot();
+            console.warn('⚠️ No API key found');
         } else {
-            console.log('✅ API key loaded successfully');
+            console.log('✅ API key loaded');
         }
-    }
-
-    disableChatbot() {
-        const fab = document.getElementById('ai-chatbot-fab');
-        if (fab) {
-            fab.style.display = 'none';
-        }
-    }
-
-    async init() {
-        console.log('🤖 Initializing AI Chatbot with Streaming...');
-        await this.loadAPIKey();
-        this.capturePageContext();
-        this.injectStyles();
-        this.injectHTML();
-        this.attachEventListeners();
-        console.log('✅ Chatbot initialized');
     }
 
     capturePageContext() {
@@ -57,13 +52,16 @@ class AIChatbot {
                     difficulty: difficulty || 'Unknown',
                     topic: topic || 'DSA'
                 };
-                console.log('📍 Context:', this.currentQuestion);
+                console.log('📍 Context captured:', this.currentQuestion);
             }
-        }, 1500);
+        }, 1000);
     }
 
     injectStyles() {
+        if (document.getElementById('ai-chatbot-styles')) return;
+        
         const style = document.createElement('style');
+        style.id = 'ai-chatbot-styles';
         style.textContent = `
             .ai-chatbot-fab {
                 position: fixed;
@@ -73,13 +71,13 @@ class AIChatbot {
                 height: 60px;
                 background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
                 border-radius: 50%;
-                display: flex;
+                display: flex !important;
                 align-items: center;
                 justify-content: center;
                 cursor: pointer;
                 box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
                 transition: all 0.3s;
-                z-index: 9998;
+                z-index: 99998 !important;
                 border: none;
             }
             .ai-chatbot-fab:hover {
@@ -91,21 +89,21 @@ class AIChatbot {
                 color: white;
             }
             .ai-chatbot-overlay {
-                position: fixed;
-                bottom: 100px;
-                right: 2rem;
+                position: fixed !important;
+                bottom: 100px !important;
+                right: 2rem !important;
                 width: 420px;
                 height: 600px;
                 background: white;
                 border-radius: 20px;
                 box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-                display: none;
+                display: none !important;
                 flex-direction: column;
-                z-index: 9999;
+                z-index: 99999 !important;
                 overflow: hidden;
             }
             .ai-chatbot-overlay.open {
-                display: flex;
+                display: flex !important;
                 animation: slideIn 0.3s ease-out;
             }
             @keyframes slideIn {
@@ -180,7 +178,6 @@ class AIChatbot {
                 padding: 2px 6px;
                 border-radius: 4px;
                 font-size: 0.85em;
-                font-family: 'Courier New', monospace;
             }
             .message-bubble pre {
                 background: #1f2937;
@@ -190,13 +187,6 @@ class AIChatbot {
                 overflow-x: auto;
                 margin: 0.5rem 0;
             }
-            .message-bubble pre code {
-                background: transparent;
-                padding: 0;
-                color: #e5e7eb;
-            }
-            
-            /* Streaming Cursor */
             .streaming-cursor {
                 display: inline-block;
                 width: 3px;
@@ -209,29 +199,6 @@ class AIChatbot {
             @keyframes blink {
                 0%, 50% { opacity: 1; }
                 51%, 100% { opacity: 0; }
-            }
-            
-            .typing-indicator {
-                display: flex;
-                gap: 0.25rem;
-                padding: 0.875rem 1.125rem;
-                background: white;
-                border: 1px solid #e5e7eb;
-                border-radius: 16px;
-                width: fit-content;
-            }
-            .typing-dot {
-                width: 8px;
-                height: 8px;
-                background: #6366f1;
-                border-radius: 50%;
-                animation: typing 1.4s infinite;
-            }
-            .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-            .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-            @keyframes typing {
-                0%, 60%, 100% { transform: translateY(0); opacity: 0.7; }
-                30% { transform: translateY(-10px); opacity: 1; }
             }
             .ai-chatbot-input-container {
                 padding: 1.25rem;
@@ -265,14 +232,9 @@ class AIChatbot {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                transition: all 0.2s;
-            }
-            .ai-chatbot-send:hover {
-                transform: scale(1.05);
             }
             .ai-chatbot-send:disabled {
                 opacity: 0.5;
-                cursor: not-allowed;
             }
             .ai-chatbot-send svg {
                 width: 20px;
@@ -288,10 +250,6 @@ class AIChatbot {
                 font-weight: 700;
                 color: #1f2937;
                 margin-bottom: 0.5rem;
-            }
-            .welcome-message p {
-                color: #6b7280;
-                font-size: 0.9rem;
             }
             .quick-actions {
                 display: grid;
@@ -313,14 +271,13 @@ class AIChatbot {
             .quick-action-btn:hover {
                 border-color: #6366f1;
                 color: #6366f1;
-                background: #f0f0ff;
             }
             @media (max-width: 768px) {
                 .ai-chatbot-overlay {
-                    bottom: 90px;
-                    right: 1rem;
-                    left: 1rem;
-                    width: auto;
+                    bottom: 90px !important;
+                    right: 1rem !important;
+                    left: 1rem !important;
+                    width: auto !important;
                 }
             }
         `;
@@ -328,6 +285,8 @@ class AIChatbot {
     }
 
     injectHTML() {
+        if (document.getElementById('ai-chatbot-fab')) return;
+        
         const container = document.createElement('div');
         container.innerHTML = `
             <button class="ai-chatbot-fab" id="ai-chatbot-fab" title="AI Assistant">
@@ -347,7 +306,7 @@ class AIChatbot {
                 <div class="ai-chatbot-messages" id="ai-chatbot-messages">
                     <div class="welcome-message">
                         <h4>👋 Hi! I'm your DSA AI Tutor</h4>
-                        <p>Ask me anything about the problem you're viewing!</p>
+                        <p style="color: #6b7280; font-size: 0.9rem;">Ask me anything!</p>
                         <div class="quick-actions">
                             <button class="quick-action-btn" data-prompt="explain">💡 Explain this problem</button>
                             <button class="quick-action-btn" data-prompt="hints">🧩 Give me hints</button>
@@ -372,77 +331,107 @@ class AIChatbot {
             </div>
         `;
         document.body.appendChild(container);
+        console.log('✅ HTML injected');
     }
 
     attachEventListeners() {
-        document.getElementById('ai-chatbot-fab').addEventListener('click', () => this.toggleChat());
-        document.getElementById('ai-chatbot-close').addEventListener('click', () => this.closeChat());
-        document.getElementById('ai-chatbot-send').addEventListener('click', () => this.sendMessage());
-        
+        const fab = document.getElementById('ai-chatbot-fab');
+        const closeBtn = document.getElementById('ai-chatbot-close');
+        const sendBtn = document.getElementById('ai-chatbot-send');
         const input = document.getElementById('ai-chatbot-input');
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                this.sendMessage();
-            }
-        });
         
-        input.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-        });
+        if (fab) {
+            fab.addEventListener('click', () => {
+                console.log('FAB clicked');
+                this.toggleChat();
+            });
+        }
         
-        document.getElementById('ai-chatbot-messages').addEventListener('click', (e) => {
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => this.closeChat());
+        }
+        
+        if (sendBtn) {
+            sendBtn.addEventListener('click', () => this.sendMessage());
+        }
+        
+        if (input) {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.sendMessage();
+                }
+            });
+            
+            input.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+            });
+        }
+        
+        document.getElementById('ai-chatbot-messages')?.addEventListener('click', (e) => {
             if (e.target.classList.contains('quick-action-btn')) {
                 this.handleQuickAction(e.target.dataset.prompt);
             }
         });
+        
+        console.log('✅ Event listeners attached');
     }
 
     toggleChat() {
         this.isOpen = !this.isOpen;
         const overlay = document.getElementById('ai-chatbot-overlay');
+        
+        console.log('Toggling chat. isOpen:', this.isOpen);
+        
         if (this.isOpen) {
-            overlay.classList.add('open');
-            document.getElementById('ai-chatbot-input').focus();
+            overlay.style.display = 'flex';
+            setTimeout(() => {
+                overlay.classList.add('open');
+                document.getElementById('ai-chatbot-input')?.focus();
+            }, 10);
         } else {
             overlay.classList.remove('open');
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
         }
     }
 
     closeChat() {
         this.isOpen = false;
-        document.getElementById('ai-chatbot-overlay').classList.remove('open');
+        const overlay = document.getElementById('ai-chatbot-overlay');
+        overlay.classList.remove('open');
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 300);
     }
 
     handleQuickAction(type) {
         const prompts = {
             'explain': this.currentQuestion 
-                ? `Explain the approach to solve "${this.currentQuestion.title}" (${this.currentQuestion.difficulty} - ${this.currentQuestion.topic})`
-                : 'How do I approach DSA problems?',
+                ? `Explain "${this.currentQuestion.title}"`
+                : 'How to approach DSA problems?',
             'hints': this.currentQuestion
-                ? `Give me hints for "${this.currentQuestion.title}" without spoiling the solution`
-                : 'What are common DSA patterns?',
+                ? `Give hints for "${this.currentQuestion.title}"`
+                : 'Common DSA patterns?',
             'pattern': this.currentQuestion
-                ? `What pattern does "${this.currentQuestion.title}" use?`
-                : 'Explain common DSA patterns',
+                ? `Pattern for "${this.currentQuestion.title}"?`
+                : 'Explain DSA patterns',
             'complexity': this.currentQuestion
-                ? `Explain time/space complexity for "${this.currentQuestion.title}"`
-                : 'Explain Big O notation'
+                ? `Time complexity for "${this.currentQuestion.title}"?`
+                : 'Explain Big O'
         };
         this.sendMessage(prompts[type]);
     }
 
     async sendMessage(customPrompt = null) {
         if (!this.apiKey) {
-            this.addMessage('❌ API key not configured. Please contact the administrator.', 'ai');
+            this.addMessage('❌ API key not configured', 'ai');
             return;
         }
 
-        if (this.isStreaming) {
-            console.log('⏳ Already streaming...');
-            return;
-        }
+        if (this.isStreaming) return;
 
         const input = document.getElementById('ai-chatbot-input');
         const sendBtn = document.getElementById('ai-chatbot-send');
@@ -450,7 +439,6 @@ class AIChatbot {
         
         if (!message) return;
 
-        console.log('📤 Sending:', message);
         input.value = '';
         input.style.height = 'auto';
         sendBtn.disabled = true;
@@ -461,8 +449,7 @@ class AIChatbot {
         try {
             await this.streamGroqAPI(message);
         } catch (error) {
-            console.error('❌ Error:', error);
-            this.addMessage(`Sorry, an error occurred: ${error.message}`, 'ai');
+            this.addMessage(`Error: ${error.message}`, 'ai');
         } finally {
             sendBtn.disabled = false;
             this.isStreaming = false;
@@ -470,10 +457,10 @@ class AIChatbot {
     }
 
     async streamGroqAPI(userMessage) {
-        let systemPrompt = `You are an expert DSA tutor. Provide clear, well-structured explanations with examples. Use markdown formatting for code blocks.`;
+        let systemPrompt = `You are an expert DSA tutor.`;
         
         if (this.currentQuestion) {
-            systemPrompt += `\n\nContext: User is viewing "${this.currentQuestion.title}" (${this.currentQuestion.difficulty}, ${this.currentQuestion.topic})`;
+            systemPrompt += `\nContext: "${this.currentQuestion.title}" (${this.currentQuestion.difficulty})`;
         }
 
         const messages = [
@@ -485,8 +472,6 @@ class AIChatbot {
             { role: 'user', content: userMessage }
         ];
 
-        console.log('🔄 Streaming from Groq API...');
-
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -495,7 +480,7 @@ class AIChatbot {
             },
             body: JSON.stringify({
                 model: 'llama-3.3-70b-versatile',
-                messages: messages,
+                messages,
                 temperature: 0.7,
                 max_tokens: 2048,
                 stream: true
@@ -503,8 +488,7 @@ class AIChatbot {
         });
 
         if (!response.ok) {
-            const error = await response.json().catch(() => ({}));
-            throw new Error(error.error?.message || `API Error ${response.status}`);
+            throw new Error(`API Error ${response.status}`);
         }
 
         await this.handleStream(response);
@@ -532,11 +516,7 @@ class AIChatbot {
         try {
             while (true) {
                 const { done, value } = await reader.read();
-                
-                if (done) {
-                    console.log('✅ Stream completed');
-                    break;
-                }
+                if (done) break;
 
                 buffer += decoder.decode(value, { stream: true });
                 const lines = buffer.split('\n');
@@ -547,8 +527,7 @@ class AIChatbot {
                     
                     if (line.startsWith('data: ')) {
                         try {
-                            const jsonStr = line.slice(6);
-                            const data = JSON.parse(jsonStr);
+                            const data = JSON.parse(line.slice(6));
                             const content = data.choices[0]?.delta?.content;
                             
                             if (content) {
@@ -557,19 +536,15 @@ class AIChatbot {
                                     '<span class="streaming-cursor"></span>';
                                 container.scrollTop = container.scrollHeight;
                             }
-                        } catch (e) {
-                            // Skip parsing errors
-                        }
+                        } catch (e) {}
                     }
                 }
             }
 
             bubble.querySelector('.streaming-cursor')?.remove();
             this.messages.push({ role: 'assistant', content: accumulatedText });
-            console.log('✅ Message saved');
 
         } catch (error) {
-            console.error('Stream error:', error);
             bubble.querySelector('.streaming-cursor')?.remove();
             throw error;
         }
@@ -583,9 +558,7 @@ class AIChatbot {
         const messageDiv = document.createElement('div');
         messageDiv.className = `chat-message ${role}`;
         messageDiv.innerHTML = `
-            <div class="message-bubble">
-                ${this.formatMessage(content)}
-            </div>
+            <div class="message-bubble">${this.formatMessage(content)}</div>
         `;
         container.appendChild(messageDiv);
         container.scrollTop = container.scrollHeight;
@@ -604,7 +577,11 @@ class AIChatbot {
 
 // Initialize
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => new AIChatbot());
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('DOM loaded, initializing chatbot...');
+        new AIChatbot();
+    });
 } else {
+    console.log('DOM ready, initializing chatbot...');
     new AIChatbot();
 }
