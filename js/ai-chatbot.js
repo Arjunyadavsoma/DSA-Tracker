@@ -1,122 +1,43 @@
-// AI Chatbot with Streaming - Direct API Version
+// AI Chatbot with Streaming - Environment Variable Version
 class AIChatbot {
     constructor() {
         this.isOpen = false;
         this.messages = [];
         this.currentQuestion = null;
-        this.apiKey = this.loadAPIKey();
+        this.apiKey = null;
         this.isStreaming = false;
         this.init();
     }
 
-    loadAPIKey() {
-        let key = localStorage.getItem('groq_api_key');
+    async loadAPIKey() {
+        // Try to get from environment variable (Vercel/build-time)
+        this.apiKey = import.meta.env?.VITE_GROQ_API_KEY || 
+                      process.env?.GROQ_API_KEY || 
+                      window.ENV?.GROQ_API_KEY;
         
-        if (!key) {
-            setTimeout(() => {
-                this.showAPIKeyPrompt();
-            }, 2000);
+        // Fallback to localStorage (for development)
+        if (!this.apiKey) {
+            this.apiKey = localStorage.getItem('groq_api_key');
         }
         
-        return key;
+        if (!this.apiKey) {
+            console.warn('⚠️ No API key found. Chatbot will be disabled.');
+            this.disableChatbot();
+        } else {
+            console.log('✅ API key loaded successfully');
+        }
     }
 
-    showAPIKeyPrompt() {
-        const existingPrompt = document.getElementById('api-key-prompt');
-        if (existingPrompt) return;
-
-        const promptHTML = `
-            <div id="api-key-prompt" style="
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: white;
-                padding: 2rem;
-                border-radius: 16px;
-                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-                z-index: 10000;
-                max-width: 400px;
-                width: 90%;
-            ">
-                <h3 style="margin: 0 0 1rem 0; color: #1f2937;">🔑 Setup AI Assistant</h3>
-                <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 1rem;">
-                    To use the AI chatbot, you need a free Groq API key.
-                </p>
-                <ol style="color: #6b7280; font-size: 0.85rem; margin: 1rem 0; padding-left: 1.5rem;">
-                    <li>Visit <a href="https://console.groq.com" target="_blank" style="color: #6366f1;">console.groq.com</a></li>
-                    <li>Sign up (free)</li>
-                    <li>Go to API Keys</li>
-                    <li>Create new key</li>
-                    <li>Paste it below</li>
-                </ol>
-                <input 
-                    type="password" 
-                    id="api-key-input" 
-                    placeholder="Enter your Groq API key..."
-                    style="
-                        width: 100%;
-                        padding: 0.75rem;
-                        border: 2px solid #e5e7eb;
-                        border-radius: 8px;
-                        font-size: 0.9rem;
-                        margin-bottom: 1rem;
-                        box-sizing: border-box;
-                    "
-                />
-                <div style="display: flex; gap: 0.5rem;">
-                    <button id="save-api-key" style="
-                        flex: 1;
-                        padding: 0.75rem;
-                        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-                        color: white;
-                        border: none;
-                        border-radius: 8px;
-                        font-weight: 600;
-                        cursor: pointer;
-                    ">Save Key</button>
-                    <button id="cancel-api-key" style="
-                        padding: 0.75rem 1rem;
-                        background: #f3f4f6;
-                        color: #6b7280;
-                        border: none;
-                        border-radius: 8px;
-                        font-weight: 600;
-                        cursor: pointer;
-                    ">Cancel</button>
-                </div>
-            </div>
-            <div id="api-key-overlay" style="
-                position: fixed;
-                inset: 0;
-                background: rgba(0,0,0,0.5);
-                z-index: 9999;
-            "></div>
-        `;
-
-        document.body.insertAdjacentHTML('beforeend', promptHTML);
-
-        document.getElementById('save-api-key').addEventListener('click', () => {
-            const key = document.getElementById('api-key-input').value.trim();
-            if (key) {
-                localStorage.setItem('groq_api_key', key);
-                this.apiKey = key;
-                document.getElementById('api-key-prompt').remove();
-                document.getElementById('api-key-overlay').remove();
-                alert('✅ API key saved! You can now use the AI chatbot.');
-            } else {
-                alert('Please enter a valid API key');
-            }
-        });
-
-        document.getElementById('cancel-api-key').addEventListener('click', () => {
-            document.getElementById('api-key-prompt').remove();
-            document.getElementById('api-key-overlay').remove();
-        });
+    disableChatbot() {
+        const fab = document.getElementById('ai-chatbot-fab');
+        if (fab) {
+            fab.style.display = 'none';
+        }
     }
 
-    init() {
+    async init() {
         console.log('🤖 Initializing AI Chatbot with Streaming...');
+        await this.loadAPIKey();
         this.capturePageContext();
         this.injectStyles();
         this.injectHTML();
@@ -259,6 +180,7 @@ class AIChatbot {
                 padding: 2px 6px;
                 border-radius: 4px;
                 font-size: 0.85em;
+                font-family: 'Courier New', monospace;
             }
             .message-bubble pre {
                 background: #1f2937;
@@ -267,6 +189,11 @@ class AIChatbot {
                 border-radius: 8px;
                 overflow-x: auto;
                 margin: 0.5rem 0;
+            }
+            .message-bubble pre code {
+                background: transparent;
+                padding: 0;
+                color: #e5e7eb;
             }
             
             /* Streaming Cursor */
@@ -338,9 +265,14 @@ class AIChatbot {
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                transition: all 0.2s;
+            }
+            .ai-chatbot-send:hover {
+                transform: scale(1.05);
             }
             .ai-chatbot-send:disabled {
                 opacity: 0.5;
+                cursor: not-allowed;
             }
             .ai-chatbot-send svg {
                 width: 20px;
@@ -356,6 +288,10 @@ class AIChatbot {
                 font-weight: 700;
                 color: #1f2937;
                 margin-bottom: 0.5rem;
+            }
+            .welcome-message p {
+                color: #6b7280;
+                font-size: 0.9rem;
             }
             .quick-actions {
                 display: grid;
@@ -403,7 +339,7 @@ class AIChatbot {
                 <div class="ai-chatbot-header">
                     <h3>🤖 DSA AI Tutor</h3>
                     <button class="ai-chatbot-close" id="ai-chatbot-close">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 20px; height: 20px; color: white;">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
                     </button>
@@ -485,7 +421,7 @@ class AIChatbot {
                 ? `Explain the approach to solve "${this.currentQuestion.title}" (${this.currentQuestion.difficulty} - ${this.currentQuestion.topic})`
                 : 'How do I approach DSA problems?',
             'hints': this.currentQuestion
-                ? `Give me hints for "${this.currentQuestion.title}" without spoiling`
+                ? `Give me hints for "${this.currentQuestion.title}" without spoiling the solution`
                 : 'What are common DSA patterns?',
             'pattern': this.currentQuestion
                 ? `What pattern does "${this.currentQuestion.title}" use?`
@@ -499,7 +435,7 @@ class AIChatbot {
 
     async sendMessage(customPrompt = null) {
         if (!this.apiKey) {
-            this.showAPIKeyPrompt();
+            this.addMessage('❌ API key not configured. Please contact the administrator.', 'ai');
             return;
         }
 
@@ -526,7 +462,7 @@ class AIChatbot {
             await this.streamGroqAPI(message);
         } catch (error) {
             console.error('❌ Error:', error);
-            this.addMessage(`Sorry, error: ${error.message}`, 'ai');
+            this.addMessage(`Sorry, an error occurred: ${error.message}`, 'ai');
         } finally {
             sendBtn.disabled = false;
             this.isStreaming = false;
@@ -534,7 +470,7 @@ class AIChatbot {
     }
 
     async streamGroqAPI(userMessage) {
-        let systemPrompt = `You are an expert DSA tutor. Provide clear, well-structured explanations with examples.`;
+        let systemPrompt = `You are an expert DSA tutor. Provide clear, well-structured explanations with examples. Use markdown formatting for code blocks.`;
         
         if (this.currentQuestion) {
             systemPrompt += `\n\nContext: User is viewing "${this.currentQuestion.title}" (${this.currentQuestion.difficulty}, ${this.currentQuestion.topic})`;
@@ -562,7 +498,7 @@ class AIChatbot {
                 messages: messages,
                 temperature: 0.7,
                 max_tokens: 2048,
-                stream: true  // Enable streaming
+                stream: true
             })
         });
 
@@ -577,7 +513,6 @@ class AIChatbot {
     async handleStream(response) {
         const container = document.getElementById('ai-chatbot-messages');
         
-        // Create streaming message bubble
         const messageDiv = document.createElement('div');
         messageDiv.className = 'chat-message ai';
         
@@ -629,7 +564,6 @@ class AIChatbot {
                 }
             }
 
-            // Remove cursor and save message
             bubble.querySelector('.streaming-cursor')?.remove();
             this.messages.push({ role: 'assistant', content: accumulatedText });
             console.log('✅ Message saved');
