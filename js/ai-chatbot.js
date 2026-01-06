@@ -25,8 +25,8 @@ class AIChatbot {
     }
 
     loadAPIKey() {
-        // Try environment first
-        this.apiKey = window.ENV?.GROQ_API_KEY;
+        // For Next.js/Vercel
+        this.apiKey = process.env.NEXT_PUBLIC_GROQ_API_KEY;
         
         // Fallback to localStorage
         if (!this.apiKey) {
@@ -35,10 +35,12 @@ class AIChatbot {
         
         if (!this.apiKey) {
             console.warn('⚠️ No API key found');
+            setTimeout(() => this.showAPIKeyPrompt(), 2000);
         } else {
             console.log('✅ API key loaded');
         }
     }
+    
 
     capturePageContext() {
         setTimeout(() => {
