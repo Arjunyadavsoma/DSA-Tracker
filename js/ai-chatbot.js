@@ -1,4 +1,4 @@
-// AI Chatbot - Uses Server-Side API Route
+// AI Chatbot - Complete Working Version
 class AIChatbot {
     constructor() {
         this.isOpen = false;
@@ -124,9 +124,6 @@ class AIChatbot {
             }
             .ai-chatbot-messages::-webkit-scrollbar {
                 width: 6px;
-            }
-            .ai-chatbot-messages::-webkit-scrollbar-track {
-                background: #f1f1f1;
             }
             .ai-chatbot-messages::-webkit-scrollbar-thumb {
                 background: #cbd5e1;
@@ -391,17 +388,17 @@ class AIChatbot {
     handleQuickAction(type) {
         const prompts = {
             'explain': this.currentQuestion 
-                ? `Explain "${this.currentQuestion.title}" step-by-step.`
-                : 'How to approach DSA problems?',
+                ? `Explain the approach to solve "${this.currentQuestion.title}" step-by-step.`
+                : 'How to approach DSA problems systematically?',
             'hints': this.currentQuestion
-                ? `Give hints for "${this.currentQuestion.title}" without spoiling.`
-                : 'Common DSA patterns?',
+                ? `Give me progressive hints for "${this.currentQuestion.title}" without revealing the solution.`
+                : 'What are common DSA patterns?',
             'pattern': this.currentQuestion
-                ? `What pattern for "${this.currentQuestion.title}"?`
-                : 'Explain DSA patterns',
+                ? `What algorithmic pattern does "${this.currentQuestion.title}" use?`
+                : 'Explain common DSA patterns',
             'complexity': this.currentQuestion
-                ? `Time complexity for "${this.currentQuestion.title}"?`
-                : 'Explain Big O'
+                ? `Explain the time and space complexity for "${this.currentQuestion.title}".`
+                : 'Explain Big O notation with examples'
         };
         this.sendMessage(prompts[type]);
     }
@@ -426,7 +423,7 @@ class AIChatbot {
             await this.streamFromAPI(message);
         } catch (error) {
             console.error('❌ Error:', error);
-            this.addMessage(`❌ Error: ${error.message}`, 'ai');
+            this.addMessage(`❌ ${error.message}`, 'ai');
         } finally {
             sendBtn.disabled = false;
             this.isStreaming = false;
@@ -434,10 +431,10 @@ class AIChatbot {
     }
 
     async streamFromAPI(userMessage) {
-        let systemPrompt = `You are an expert DSA tutor. Provide clear explanations with examples.`;
+        let systemPrompt = `You are an expert DSA tutor. Provide clear, concise explanations with examples.`;
         
         if (this.currentQuestion) {
-            systemPrompt += `\nContext: "${this.currentQuestion.title}" (${this.currentQuestion.difficulty})`;
+            systemPrompt += `\nContext: User is viewing "${this.currentQuestion.title}" (${this.currentQuestion.difficulty}, ${this.currentQuestion.topic})`;
         }
 
         const messages = [
@@ -449,82 +446,55 @@ class AIChatbot {
             { role: 'user', content: userMessage }
         ];
 
-        // Call YOUR API route, not Groq directly
+        console.log('📤 Calling API...');
+
         const response = await fetch('/api/chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                messages,
-                model: 'llama-3.3-70b-versatile',
-                temperature: 0.7,
-                max_tokens: 2048,
-                stream: true
-            })
+            body: JSON.stringify({ messages })
         });
 
+        console.log('📥 Response status:', response.status);
+
         if (!response.ok) {
-            throw new Error(`Server error ${response.status}`);
+            const error = await response.json();
+            console.error('API Error:', error);
+            throw new Error(error.error || `Server error ${response.status}`);
         }
 
-        await this.handleStream(response);
-    }
-
-    async handleStream(response) {
-        const container = document.getElementById('ai-chatbot-messages');
+        const data = await response.json();
+        console.log('✅ Got response');
         
+        const content = data.choices?.[0]?.message?.content || 'No response received';
+        
+        // Simulate typing effect
+        const container = document.getElementById('ai-chatbot-messages');
         const messageDiv = document.createElement('div');
         messageDiv.className = 'chat-message ai';
-        
         const bubble = document.createElement('div');
         bubble.className = 'message-bubble';
-        bubble.innerHTML = '<span class="streaming-cursor"></span>';
-        
         messageDiv.appendChild(bubble);
         container.appendChild(messageDiv);
-        container.scrollTop = container.scrollHeight;
 
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let accumulatedText = '';
-        let buffer = '';
+        let index = 0;
+        const typeSpeed = 20;
 
-        try {
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-
-                buffer += decoder.decode(value, { stream: true });
-                const lines = buffer.split('\n');
-                buffer = lines.pop() || '';
-
-                for (const line of lines) {
-                    if (line.trim() === '' || line.trim() === 'data: [DONE]') continue;
-                    
-                    if (line.startsWith('data: ')) {
-                        try {
-                            const data = JSON.parse(line.slice(6));
-                            const content = data.choices[0]?.delta?.content;
-                            
-                            if (content) {
-                                accumulatedText += content;
-                                bubble.innerHTML = this.formatMessage(accumulatedText) + 
-                                    '<span class="streaming-cursor"></span>';
-                                container.scrollTop = container.scrollHeight;
-                            }
-                        } catch (e) {}
-                    }
-                }
+        const typeEffect = () => {
+            if (index < content.length) {
+                bubble.innerHTML = this.formatMessage(content.substring(0, index + 1)) + 
+                    '<span class="streaming-cursor"></span>';
+                index++;
+                container.scrollTop = container.scrollHeight;
+                setTimeout(typeEffect, typeSpeed);
+            } else {
+                bubble.querySelector('.streaming-cursor')?.remove();
+                this.messages.push({ role: 'assistant', content });
             }
+        };
 
-            bubble.querySelector('.streaming-cursor')?.remove();
-            this.messages.push({ role: 'assistant', content: accumulatedText });
-
-        } catch (error) {
-            bubble.querySelector('.streaming-cursor')?.remove();
-            throw error;
-        }
+        typeEffect();
     }
 
     addMessage(content, role) {
