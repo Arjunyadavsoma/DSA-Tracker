@@ -1,4 +1,4 @@
-// AI Chatbot - Complete with Modern Formatting
+// AI Chatbot - Complete with Context Awareness and Modern Formatting
 class AIChatbot {
     constructor() {
         this.isOpen = false;
@@ -19,17 +19,32 @@ class AIChatbot {
 
     capturePageContext() {
         setTimeout(() => {
-            const questionTitle = document.getElementById('question-title')?.textContent;
-            const difficulty = document.getElementById('difficulty-badge')?.textContent;
-            const topic = document.getElementById('topic-badge')?.textContent;
+            // Try multiple selectors to capture question details
+            const questionTitle = document.getElementById('question-title')?.textContent || 
+                                document.querySelector('h1')?.textContent ||
+                                document.querySelector('.question-title')?.textContent;
+            
+            const difficulty = document.getElementById('difficulty-badge')?.textContent ||
+                             document.querySelector('.difficulty')?.textContent;
+            
+            const topic = document.getElementById('topic-badge')?.textContent ||
+                         document.querySelector('.topic')?.textContent;
+            
+            const description = document.getElementById('question-description')?.textContent ||
+                              document.querySelector('.question-description')?.textContent ||
+                              document.querySelector('.problem-statement')?.textContent;
 
             if (questionTitle) {
                 this.currentQuestion = {
-                    title: questionTitle,
-                    difficulty: difficulty || 'Unknown',
-                    topic: topic || 'DSA'
+                    title: questionTitle.trim(),
+                    difficulty: difficulty?.trim() || 'Unknown',
+                    topic: topic?.trim() || 'DSA',
+                    description: description?.trim().substring(0, 500) || null // First 500 chars
                 };
                 console.log('📍 Context captured:', this.currentQuestion);
+            } else {
+                console.log('⚠️ No question context found on this page');
+                this.currentQuestion = null;
             }
         }, 1000);
     }
@@ -96,10 +111,19 @@ class AIChatbot {
                 align-items: center;
                 justify-content: space-between;
             }
-            .ai-chatbot-header h3 {
+            .ai-chatbot-header > div h3 {
                 font-size: 1.125rem;
                 font-weight: 700;
                 margin: 0;
+            }
+            #context-indicator {
+                font-size: 0.75rem;
+                opacity: 0.9;
+                margin: 0.25rem 0 0 0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 280px;
             }
             .ai-chatbot-close {
                 background: rgba(255, 255, 255, 0.2);
@@ -112,6 +136,7 @@ class AIChatbot {
                 align-items: center;
                 justify-content: center;
                 transition: all 0.2s;
+                flex-shrink: 0;
             }
             .ai-chatbot-close:hover {
                 background: rgba(255, 255, 255, 0.3);
@@ -416,6 +441,9 @@ class AIChatbot {
                     font-size: 0.8rem;
                     padding: 1rem;
                 }
+                #context-indicator {
+                    max-width: 200px;
+                }
             }
         `;
         document.head.appendChild(style);
@@ -433,7 +461,10 @@ class AIChatbot {
             </button>
             <div class="ai-chatbot-overlay" id="ai-chatbot-overlay">
                 <div class="ai-chatbot-header">
-                    <h3>🤖 DSA AI Tutor</h3>
+                    <div>
+                        <h3>🤖 DSA AI Tutor</h3>
+                        <p id="context-indicator" style="display: none;"></p>
+                    </div>
                     <button class="ai-chatbot-close" id="ai-chatbot-close">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 20px; height: 20px; color: white;">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -501,6 +532,17 @@ class AIChatbot {
         
         if (this.isOpen) {
             overlay.style.display = 'flex';
+            
+            // Update context indicator
+            const indicator = document.getElementById('context-indicator');
+            if (this.currentQuestion) {
+                indicator.textContent = `📖 ${this.currentQuestion.title}`;
+                indicator.style.display = 'block';
+            } else {
+                indicator.textContent = '';
+                indicator.style.display = 'none';
+            }
+            
             setTimeout(() => {
                 overlay.classList.add('open');
                 document.getElementById('ai-chatbot-input')?.focus();
@@ -519,20 +561,29 @@ class AIChatbot {
     }
 
     handleQuickAction(type) {
+        if (!this.currentQuestion) {
+            // No question context - provide general guidance
+            const generalPrompts = {
+                'explain': 'Explain a systematic approach to solve DSA problems.',
+                'hints': 'What are the most important DSA patterns I should know?',
+                'pattern': 'List common algorithmic patterns with examples.',
+                'complexity': 'Explain time and space complexity with Big O notation.'
+            };
+            this.sendMessage(generalPrompts[type]);
+            return;
+        }
+
+        // Question-specific prompts
         const prompts = {
-            'explain': this.currentQuestion 
-                ? `Explain the approach to solve "${this.currentQuestion.title}" step-by-step.`
-                : 'How to approach DSA problems systematically?',
-            'hints': this.currentQuestion
-                ? `Give me progressive hints for "${this.currentQuestion.title}" without revealing the solution.`
-                : 'What are common DSA patterns?',
-            'pattern': this.currentQuestion
-                ? `What algorithmic pattern does "${this.currentQuestion.title}" use?`
-                : 'Explain common DSA patterns',
-            'complexity': this.currentQuestion
-                ? `Explain the time and space complexity for "${this.currentQuestion.title}".`
-                : 'Explain Big O notation with examples'
+            'explain': `Explain the optimal approach to solve "${this.currentQuestion.title}". Break it down step-by-step and mention the key insights needed.`,
+            
+            'hints': `Give me 3-4 progressive hints for solving "${this.currentQuestion.title}" without revealing the complete solution. Start with the most general hint and gradually get more specific.`,
+            
+            'pattern': `What algorithmic pattern or technique should I use for "${this.currentQuestion.title}"? Also mention similar problems that use the same pattern.`,
+            
+            'complexity': `Analyze the time and space complexity for the optimal solution of "${this.currentQuestion.title}". Explain why this is the best we can achieve.`
         };
+        
         this.sendMessage(prompts[type]);
     }
 
@@ -564,10 +615,28 @@ class AIChatbot {
     }
 
     async streamFromAPI(userMessage) {
-        let systemPrompt = `You are an expert DSA tutor. Provide clear, concise explanations with examples. Use markdown formatting for better readability.`;
+        let systemPrompt = `You are an expert DSA (Data Structures and Algorithms) tutor and coding mentor. Provide clear, well-structured explanations with examples when needed. Use markdown formatting for better readability.`;
         
+        // Add rich context if available
         if (this.currentQuestion) {
-            systemPrompt += `\nContext: User is viewing "${this.currentQuestion.title}" (${this.currentQuestion.difficulty}, ${this.currentQuestion.topic})`;
+            systemPrompt += `\n\n**Current Problem Context:**
+- Problem: "${this.currentQuestion.title}"
+- Difficulty: ${this.currentQuestion.difficulty}
+- Topic/Category: ${this.currentQuestion.topic}`;
+            
+            if (this.currentQuestion.description) {
+                systemPrompt += `\n- Description Preview: ${this.currentQuestion.description}`;
+            }
+            
+            systemPrompt += `\n\n**Important Instructions:**
+- When the user asks questions like "explain this", "give hints", "what's the approach", "time complexity", etc., they are referring to the problem: "${this.currentQuestion.title}"
+- Tailor your response specifically to this problem
+- If they ask for hints, give progressive hints without revealing the complete solution
+- If they ask about approach, explain the algorithmic pattern and strategy
+- If they ask about complexity, analyze both time and space complexity for this specific problem
+- If they share code, review it in the context of this problem`;
+        } else {
+            systemPrompt += `\n\nNote: User is not currently viewing a specific problem. Provide general DSA guidance unless they mention a specific problem.`;
         }
 
         const messages = [
@@ -579,7 +648,7 @@ class AIChatbot {
             { role: 'user', content: userMessage }
         ];
 
-        console.log('📤 Calling API...');
+        console.log('📤 Calling API with context:', this.currentQuestion?.title || 'No specific problem');
 
         const response = await fetch('/api/chat', {
             method: 'POST',
